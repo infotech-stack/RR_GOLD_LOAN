@@ -1,0 +1,90 @@
+.nav_bar {
+  background-color: #373a8f !important;
+  z-index: 1000;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  height: 48px;
+}
+
+.menu-icon {
+  color: white !important;
+  font-size: 20px !important;
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+.logo {
+  width: 90%;
+  height: auto;
+  border-radius: 20px;
+}
+
+@media (min-width: 992px) {
+  .nav_bar {
+    display: none;
+  }
+}
+
+.navbar-nav .nav-item .nav-link {
+  display: flex;
+  align-items: center;
+}
+
+.sub-green {
+  background-color: rgb(29, 114, 88) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+.sub-green1 {
+  background-color: rgb(199 1 130) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+.sub-del {
+  background-color: rgb(181, 27, 10) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+.add-but {
+  background-color: rgb(226, 56, 56) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  border-radius: 30px !important;
+  width: 150px !important;
+}
+
+.upload-button {
+  text-transform: capitalize !important;
+  color: #ff8300 !important;
+  border: 1px dashed #ff8300 !important;
+  border-radius: 4px !important;
+  padding: 3px 16px !important;
+  font-weight: bold;
+}
+.icon-color {
+  color: #ff8300  !important;
+  font-size: 30px !important;
+}
+.cust_font {
+  font-size: 22px !important;
+}
+.downs {
+  background-color: #34662b !important;
+  width: 180px !important;
+  height: 35px !important;
+  padding: 2px !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  margin-right: 28px !important;
+}
+.form_control {
+  width: 160px !important;
+  background-color: #fff !important;
+}
+
+@media (min-width: 992px) {
+  .search {
+    width: 260px !important;
+  }
+}

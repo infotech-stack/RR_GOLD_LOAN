@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.10fdb7c6.css",
+    "main.js": "/static/js/main.6bb633c6.js",
+    "static/js/213.17a768cb.chunk.js": "/static/js/213.17a768cb.chunk.js",
+    "static/js/455.9d5c7ecf.chunk.js": "/static/js/455.9d5c7ecf.chunk.js",
+    "static/media/women-jewel.jpeg": "/static/media/women-jewel.0dde6fe0763df49a59ec.jpeg",
+    "static/media/KRT Gold Finance Logo PNG File.png": "/static/media/KRT Gold Finance Logo PNG File.036e7273f641d0518fab.png",
+    "static/media/RR Gold Finance Full Logo.jpeg": "/static/media/RR Gold Finance Full Logo.f825bd5faa085d32b743.jpeg",
+    "static/media/gold_jewel_image.jpg": "/static/media/gold_jewel_image.710eb21279747d0e29db.jpg",
+    "static/media/blue_jewel.jpg": "/static/media/blue_jewel.ad4418a1dae1b901206f.jpg",
+    "static/media/RR Gold Loan Logo.jpeg": "/static/media/RR Gold Loan Logo.2f6807febfd1bfa83598.jpeg",
+    "static/media/usericon.png": "/static/media/usericon.cf586411f46f702441a4.png",
+    "index.html": "/index.html",
+    "main.10fdb7c6.css.map": "/static/css/main.10fdb7c6.css.map",
+    "main.6bb633c6.js.map": "/static/js/main.6bb633c6.js.map",
+    "213.17a768cb.chunk.js.map": "/static/js/213.17a768cb.chunk.js.map",
+    "455.9d5c7ecf.chunk.js.map": "/static/js/455.9d5c7ecf.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.10fdb7c6.css",
+    "static/js/main.6bb633c6.js"
+  ]
+}

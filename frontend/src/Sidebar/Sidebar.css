@@ -1,0 +1,217 @@
+/* Sidebar.css */
+.sidebar {
+  width: 250px;
+  height: 100vh; /* Full viewport height */
+  background-color: #373A8F; /* New background color */
+  padding: 15px 0;
+  transition: all 0.3s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent scrolling */
+}
+
+.sidebar.open {
+  width: 250px;
+}
+
+/* Logo Section */
+.sidebar-logo {
+  padding-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-logo .logo {
+  width: 90%;
+  height: auto;
+  border-radius: 20px;
+}
+
+/* User Profile Section */
+.user-profile {
+  padding: 10px 20px; /* Reduced padding */
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-profile .profile-pic {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+  background-color: white;
+  padding: 6px;
+}
+
+.user-profile .user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-profile .user-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+}
+
+.user-profile .user-role {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Navigation Items Container */
+.nav-items-container {
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Allow scrolling if content overflows */
+  padding-bottom: 10px; /* Add padding at the bottom */
+}
+
+/* Navigation Items */
+.sidebar .nav-link {
+  color: white;
+  font-size: 14px; /* Reduced font size */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  padding: 8px 15px; /* Reduced padding */
+  text-decoration: none;
+  transition: background 0.3s ease-in-out;
+  border-radius: 6px;
+  margin: 3px 0; /* Reduced margin */
+}
+
+.sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Light hover effect */
+  color: #FFD700; 
+  cursor: pointer;
+}
+
+/* Active Menu Item - White Background */
+.sidebar .nav-link.active {
+  background-color: #F8F9FC;
+margin: 2px;
+  color: #373A8F !important; 
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+/* Submenu Open - Gold Text for Parent Item */
+.sidebar .nav-link.submenu-open {
+  color: #FFD700 !important; /* Gold text when submenu is open */
+  background-color: transparent; /* No background change */
+}
+
+.sidebar .icon {
+  margin-right: 10px; /* Reduced space between icon and text */
+  font-size: 16px; /* Reduced icon size */
+}
+
+.sidebar .icon.active {
+  color: rgb(254 173 43); /* Highlighted icon color (gold) */
+}
+
+.sidebar .dropdown-icon {
+  margin-left: auto;
+  color: rgb(254 173 43);
+}
+
+.sidebar .dropdown-icon.active {
+  transform: rotate(180deg);
+}
+
+/* Submenu Items */
+.sidebar .sub-menu {
+  padding-left: 20px; /* Reduced indentation */
+}
+
+.sidebar .sub-link {
+  font-size: 13px; /* Reduced font size */
+  padding: 8px 15px 8px 30px; /* Reduced padding */
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  border-radius: 6px;
+  margin: 3px 0; /* Reduced margin */
+}
+
+.sidebar .sub-link:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Light hover effect */
+  color: #e6bb0e; /* Gold text on hover */
+}
+
+.sidebar .sub-link.active {
+  background-color: white; /* White background for active sub-item */
+  color: #373A8F !important; /* Blue text for active sub-item */
+  font-weight: bold;
+}
+
+.sidebar .sub-icon {
+  margin-right: 10px; /* Reduced spacing */
+  font-size: 13px; /* Reduced icon size */
+}
+
+.sidebar .sub-icon.active {
+  color: #373A8F; /* Blue icon for active sub-item */
+}
+
+/* Logout Section */
+.logout-section {
+  padding: 10px 20px 0px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logout-link {
+  color: white;
+  font-size: 14px; /* Reduced font size */
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logout-link:hover {
+  color: rgba(255, 255, 255, 0.8); /* Light hover effect */
+}
+
+.logout-icon {
+  margin-right: 10px; /* Reduced spacing */
+  font-size: 16px; /* Reduced icon size */
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .sidebar.open {
+    width: 200px;
+  }
+
+  .sidebar .nav-link {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .sidebar .icon {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .sidebar .sub-link {
+    font-size: 12px;
+    padding: 6px 12px 6px 25px;
+  }
+
+  .sidebar .sub-icon {
+    font-size: 12px;
+    margin-right: 8px;
+  }
+}

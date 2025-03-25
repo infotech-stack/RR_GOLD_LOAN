@@ -1,0 +1,42 @@
+.signup-container {
+  display: flex;
+  height: 100vh;
+}
+
+.signup-image {
+  flex: 1; /* Takes half the screen */
+  background-image: url('./women-jewel.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.signup-form-container {
+  flex: 1; /* Takes the other half */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #286798;
+  padding: 20px;
+}
+
+
+.login-papers{
+  height:465px !important;
+  
+  background: rgb(255, 255, 255) !important; /* Soft transparency */
+  border-radius: 20px !important;
+  padding:30px !important;
+  width:100%;
+  max-width: 480px !important;
+}
+
+/* Responsive: Stack items in one column on smaller screens */
+@media (max-width: 768px) {
+  .signup-container {
+    flex-direction: column;
+  }
+  .signup-image {
+    height: 40vh; /* Adjust height for mobile */
+    flex: none;
+  }
+}

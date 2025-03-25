@@ -1,0 +1,98 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+
+}
+
+.login-page {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+.login-image {
+  flex: 1; /* Take up half the space */
+  background-image: url("./gold_jewel_image.jpg"); /* Your background image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.login-form-container {
+  flex: 1; /* Take up half the space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #286798;
+}
+
+.login-container {
+  max-width: 500px;
+  height: 500px;
+  width: 100%;
+  padding: 20px;
+
+  background: rgb(251, 253, 255) !important; /* Soft transparency */
+  border-radius: 20px;
+
+  text-align: center;
+}
+
+.login-header {
+  margin-bottom: 20px;
+  font-size: 72px;
+  font-family: "Inter Tight", cursive !important;
+  font-weight: 600 !important;
+
+  background-image: linear-gradient(
+    45deg,
+    #d4af37 15%,
+    #b8860b 37%,
+    #2e3191 60%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-input {
+  margin-bottom: 20px;
+}
+
+.login-button {
+  margin-top: 20px;
+  background: linear-gradient(to right, #b8860b, #3d42bc);
+  font-family: "Inter Tight", cursive !important;
+  font-weight: 600 !important;
+  text-transform: capitalize;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: background 0.3s ease-in-out;
+}
+
+.login-button:hover {
+  background: linear-gradient(to right, #2e3191, #b8860b);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column; /* Stack columns on small screens */
+  }
+
+  .login-image {
+    flex: 0.5; /* Reduce height for image on small screens */
+  }
+
+  .login-form-container {
+    flex: 1; /* Take up remaining space */
+  }
+}

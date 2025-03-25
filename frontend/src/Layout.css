@@ -1,0 +1,13 @@
+.main-content {
+    margin-top: 70px; /* Adjust this value based on your navbar height */
+    padding: 20px; /* Add some padding for better spacing */
+  }
+  
+  
+  @media (max-width: 992px) {
+    .main-content {
+      margin-top: 60px; /* Adjust margin for mobile views */
+    }
+  }
+  
+  
