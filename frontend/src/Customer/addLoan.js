@@ -301,7 +301,7 @@ const Addloan = ({
   
       // Validation for loan number
       if (name === "loanNumber") {
-        const pattern = /^KRT\d{3,}$/;
+        const pattern = /^RR\d{3,}$/;
         if (!isEditing) {
           setValidationErrors((prevErrors) => ({
             ...prevErrors,
@@ -803,11 +803,11 @@ const Addloan = ({
     className={`form-control ${validationErrors.loanNumber ? 'is-invalid' : ''}`}
     value={formData.loanNumber}
     onChange={handleChange}
-    placeholder="Enter Loan Number (e.g., KRT123)"
+    placeholder="Enter Loan Number (e.g., RR123)"
   />
   {validationErrors.loanNumber && (
     <div className="invalid-feedback">
-      Loan Number must start with 'kRT' followed by at least 3 digits
+      Loan Number must start with 'RR' followed by at least 3 digits
     </div>
   )}
 </Grid>

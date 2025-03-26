@@ -444,6 +444,9 @@ useEffect(() => {
 
   const isPopoverOpen = Boolean(anchorEl);
 
+
+
+  
   return (
     <Paper
       elevation={4}
@@ -756,16 +759,20 @@ useEffect(() => {
 </TableCell>
 
 
-                  <TableCell
-                    align="center"
-                    sx={{
-                      border: "1px solid #8f8f8f",
-                      fontSize: "13px",
-                      backgroundColor: "#F5F5F5",
-                    }}
-                  >
-                     ₹ {entry.loanamountbalance !== null ? entry.loanamountbalance : entry.loanAmount}
-                  </TableCell>
+<TableCell
+  align="center"
+  sx={{
+    border: "1px solid #8f8f8f",
+    fontSize: "13px",
+    backgroundColor: "#F5F5F5",
+  }}
+>
+  ₹ {
+    // Find the matching loan data for this entry using loanNumber
+    loanData.find(loan => loan.loanNumber === entry.loanNumber)?.loanamountbalance 
+    || entry.loanAmount
+  }
+</TableCell>
                  
                  
                  

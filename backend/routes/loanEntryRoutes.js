@@ -46,6 +46,7 @@ router.get('/all', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch loan entries', error });
   }
 });
+
 router.get('/:loanNumber', async (req, res) => {
   try {
     const loanNumber = req.params.loanNumber;

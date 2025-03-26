@@ -150,9 +150,11 @@ const CustomerDialog = ({
 
   const handleSaveClick = async () => {
     try {
+      const currentGrossWeight = calculateGrossWeight(editableList);
       const updatedData = {
         ...editableEntry,
-        jewelList: editableList,
+        jewelList: editableList, 
+        gw: currentGrossWeight,
         date: editableEntry.date,
       };
 
@@ -388,19 +390,18 @@ const CustomerDialog = ({
           updatedEntry.interest = interest;
         }
 
-        if (name === "iw" || name === "gw") {
+        if (name === 'iw' || name === 'gw') {
           updatedEntry[name] = parseFloat(value);
-
-          const iw =
-            name === "iw"
-              ? parseFloat(value)
-              : parseFloat(updatedEntry.iw || 0);
-          const gw =
-            name === "gw"
-              ? parseFloat(value)
-              : parseFloat(updatedEntry.gw || 0);
-          if (!isNaN(iw) && !isNaN(gw)) {
-            updatedEntry.nw = (gw - iw).toFixed(2);
+  
+          if (name === 'iw') {
+            // When jewel weight changes, update gross weight from the jewel list
+            const newGrossWeight = calculateGrossWeight(editableList);
+            updatedEntry.gw = newGrossWeight;
+            updatedEntry.nw = (newGrossWeight - parseFloat(updatedEntry.iw || 0)).toFixed(2);
+          } else {
+            // When gross weight is directly modified
+            const iw = parseFloat(updatedEntry.iw || 0);
+            updatedEntry.nw = (parseFloat(value) - iw).toFixed(2);
           }
         }
 
@@ -467,11 +468,21 @@ const CustomerDialog = ({
   };
   const addJewelDetails = () => {
     const newJewel = {
-      jDetails: "",
-      quantity: 0,
-      quality: "",
+      jDetails: "", 
+      quantity: 0,   
+      quality: "",   
+      iw: 0 // Initialize with 0 weight
     };
-    setEditableList([...editableList, newJewel]);
+    const newList = [...editableList, newJewel];
+    setEditableList(newList);
+    
+    // Recalculate gross weight
+    const newGrossWeight = calculateGrossWeight(newList);
+    setEditableEntry(prev => ({
+      ...prev,
+      gw: newGrossWeight,
+      nw: (newGrossWeight - (prev.iw || 0)).toFixed(2)
+    }));
   };
   const [loanTotals, setLoanTotals] = useState({
     totalLoans: 0,
@@ -505,6 +516,14 @@ const CustomerDialog = ({
   const deleteJewel = (index) => {
     const updatedList = editableList.filter((_, i) => i !== index);
     setEditableList(updatedList);
+
+    // Recalculate gross weight
+  const newGrossWeight = calculateGrossWeight(updatedList);
+  setEditableEntry(prev => ({
+    ...prev,
+    gw: newGrossWeight,
+    nw: (newGrossWeight - (prev.iw || 0)).toFixed(2)
+  }));
   };
   const calculateGrossWeight = (list) => {
     const totalWeight = list.reduce(
@@ -845,21 +864,21 @@ const CustomerDialog = ({
                     />
                   </div>
                   <div className="col-12 col-md-3">
-                    <label className="form-label">Balance Principal : </label>
-                    <input
-                      type="text"
-                      value={
-                        editableEntry.loanamountbalance !== null &&
-                        editableEntry.loanamountbalance !== ""
-                          ? editableEntry.loanamountbalance
-                          : editableEntry.loanAmount
-                      }
-                      name="loanamountbalance"
-                      className="form-control"
-                      onChange={handleChange}
-                      readOnly={!isEditing}
-                    />
-                  </div>
+  <label className="form-label">Balance Principal : </label>
+  <input
+    type="text"
+    value={
+      loanData?.loanamountbalance ?? // Check the single loan object
+      (editableEntry.loanamountbalance !== null && editableEntry.loanamountbalance !== ""
+        ? editableEntry.loanamountbalance
+        : editableEntry.loanAmount)
+    }
+    name="loanamountbalance"
+    className="form-control"
+    onChange={handleChange}
+    readOnly={!isEditing}
+  />
+</div>
                   <div className="col-12 col-md-2">
                     <label className="form-label">Interest Amount:</label>
                     <input

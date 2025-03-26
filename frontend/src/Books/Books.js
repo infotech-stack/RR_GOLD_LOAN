@@ -70,7 +70,7 @@ const Books = () => {
     if (!customerData.rupeesInWords)
       errors.rupeesInWords = "Rupees In Words is required";
 
-    if (!customerData.iw) errors.iw = "Weight is required";
+  
     if (!customerData.lastDateForLoan)
       errors.lastDateForLoan = "Last Date For Loan is required";
 

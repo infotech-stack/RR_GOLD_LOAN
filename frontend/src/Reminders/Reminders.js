@@ -7,12 +7,13 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { BalanceContext } from "./BalanceContext";
 import { utils, writeFile, readFile, writeFileAsync } from 'xlsx';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { TextField, Button } from '@mui/material';
+
 import { AccountBalance, Work } from "@mui/icons-material";
 import InputIcon from "@mui/icons-material/Input";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalculator } from "@fortawesome/free-solid-svg-icons";
 
 const Reminders = () => {
   const [dayToDayExpenses, setDayToDayExpenses] = useState([]);
@@ -21,12 +22,11 @@ const Reminders = () => {
   const [vouchers, setVouchers] = useState([]);
   const [ledgerEntries, setLedgerEntries] = useState([]);
   const [apraisalentries, setApraisalentries] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(
-    new Date().getFullYear().toString()
-  );
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const { updateBalances } = useContext(BalanceContext);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,9 +39,7 @@ const Reminders = () => {
           appraisalRes,
         ] = await Promise.all([
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/vouchers/all`),
-          axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/paidvouchers/all`
-          ),
+          axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/paidvouchers/all`),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/expenses`),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/salary`),
           axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/ledger/all`),
@@ -81,24 +79,20 @@ const Reminders = () => {
   const filterDataByDateRange = (data) => {
     if (!selectedYear) return data;
 
-    // Convert selected year to number
     const year = Number(selectedYear);
 
     return data.filter((item) => {
       const dateField = new Date(item.date || item.paymentDate);
       const itemYear = dateField.getFullYear();
 
-      // Check if the item matches the selected year
       if (itemYear !== year) {
         return false;
       }
 
-      // If no startDate or endDate is provided, return items for the selected year only
       if (!startDate || !endDate) {
         return true;
       }
 
-      // Apply date range filtering if startDate and endDate are provided
       const start = new Date(startDate);
       start.setHours(0, 0, 0, 0);
       const end = new Date(endDate);
@@ -126,20 +120,13 @@ const Reminders = () => {
     }, {});
   };
 
-  const aggregatedExpenses = aggregateDataByDate(dayToDayExpenses, [
-    "totalRupees",
-  ]);
+  const aggregatedExpenses = aggregateDataByDate(dayToDayExpenses, ["totalRupees"]);
   const aggregatedSalaries = aggregateDataByDate(salaries, ["salaryAmount"]);
   const aggregatedVouchers = aggregateDataByDate(vouchers, ["amount"]);
   const aggregatedLedger = aggregateDataByDate(ledgerEntries, ["loanAmount"]);
   const aggregatedPaidVouchers = aggregateDataByDate(paidvoucher, ["amount"]);
-  const aggregatedAppraisals = aggregateDataByDate(apraisalentries, [
-    "interestamount",
-    "interestPrinciple",
-  ]);
-  const aggregatedDocCharges = aggregateDataByDate(ledgerEntries, [
-    "doccharge",
-  ]);
+  const aggregatedAppraisals = aggregateDataByDate(apraisalentries, ["interestamount", "interestPrinciple"]);
+  const aggregatedDocCharges = aggregateDataByDate(ledgerEntries, ["doccharge"]);
 
   const allDates = [
     ...new Set([
@@ -156,8 +143,7 @@ const Reminders = () => {
     const filteredDates = allDates.filter((date) => {
       const dateField = new Date(date);
       const year = dateField.getFullYear();
-  
-      // Filter by selected year
+
       if (selectedYear && year !== Number(selectedYear)) {
         return false;
       }
@@ -168,44 +154,34 @@ const Reminders = () => {
           dateField <= new Date(endDate).setHours(23, 59, 59, 999))
       );
     });
-  
-    let prevClosingBalance = 0; // Start with zero or initial balance
-    let lastYearClosingBalance = 0; // Track the last year's closing balance
-  
-    // Calculate last year's closing balance
+
+    let prevClosingBalance = 0;
+    let lastYearClosingBalance = 0;
+
     const lastYearDates = allDates.filter((date) => {
       const dateField = new Date(date);
       return dateField.getFullYear() < new Date(filteredDates[0]).getFullYear();
     });
-  
+
     lastYearDates.forEach((date) => {
       lastYearClosingBalance = calculateClosingBalance(lastYearClosingBalance, date);
     });
-  
-    // Log the correct last year closing balance
 
-  
     return filteredDates.map((date, index) => {
       const currentYear = new Date(date).getFullYear();
-  
-      // For the first date, always set the opening balance to last year's closing balance
+
       if (index === 0) {
-        prevClosingBalance = lastYearClosingBalance;  // Use last year's closing balance
+        prevClosingBalance = lastYearClosingBalance;
       }
-  
-      // Set opening balance for the current date
+
       const openingBalance = prevClosingBalance;
       const closingBalance = calculateClosingBalance(openingBalance, date);
-      
-      // Update prevClosingBalance for the next date
+
       prevClosingBalance = closingBalance;
-  
-      // Log for debugging purposes
-     
-  
+
       return {
         date,
-        openingBalance: formatNumber(openingBalance),  // Use correct opening balance
+        openingBalance: formatNumber(openingBalance),
         dayToDayExpenses: aggregatedExpenses[date] || { date: date, totalAmount: 0 },
         salaries: aggregatedSalaries[date] || { date: date, totalAmount: 0 },
         vouchers: aggregatedVouchers[date] || { date: date, totalAmount: 0 },
@@ -213,12 +189,11 @@ const Reminders = () => {
         doccharge: aggregatedDocCharges[date] || { date: date, totalAmount: 0 },
         ledger: aggregatedLedger[date] || { date: date, totalAmount: 0 },
         appraisals: aggregatedAppraisals[date] || { date: date, totalAmount: 0 },
-        closingBalance: formatNumber(closingBalance),  // Set closing balance for current date
+        closingBalance: formatNumber(closingBalance),
       };
     });
   };
-  
-  
+
   const calculateClosingBalance = (prevClosingBalance, date) => {
     const openingBalance = prevClosingBalance;
     const dayToDayTotal = aggregatedExpenses[date]?.totalAmount || 0;
@@ -242,9 +217,10 @@ const Reminders = () => {
   };
 
   const formatNumber = (number) => {
-    const roundedNumber = Math.round(number); // Round to the nearest integer
-    return roundedNumber === 0 ? "" : roundedNumber; // Display empty string if zero
+    const roundedNumber = Math.round(number);
+    return roundedNumber === 0 ? "" : roundedNumber;
   };
+
   const filteredRows = filterAndAggregateData();
 
   useEffect(() => {
@@ -252,149 +228,12 @@ const Reminders = () => {
     const todayRow = filteredRows.find((row) => row.date === todayDate);
 
     if (todayRow) {
-      updateBalances(filteredRows); // Update balances in context
+      updateBalances(filteredRows);
     } else {
-  
+      console.log("No entry for today's date.");
     }
   }, [filteredRows, updateBalances]);
-  const handleDownloadPDF = async () => {
-    const input = document.querySelector(".paperbg");
-    const actionsColumn = document.querySelectorAll(".actions-column");
 
-    // Hide the actions column
-    actionsColumn.forEach((cell) => {
-      cell.style.display = "none";
-    });
-
-    if (input) {
-      const canvas = await html2canvas(input, {
-        useCORS: true,
-        scale: 2,
-      });
-      const imgData = canvas.toDataURL("image/png");
-
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgWidth = pdf.internal.pageSize.width;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      // Add the first page with the image
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pdf.internal.pageSize.height;
-
-      // Add new pages if needed
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pdf.internal.pageSize.height;
-      }
-
-      // Save the PDF
-      pdf.save("customer-entry-details.pdf");
-    }
-
-    // Show the actions column again
-    actionsColumn.forEach((cell) => {
-      cell.style.display = "";
-    });
-  };
-
-  const dayToDayExpensesTotal = filteredRows.reduce(
-    (acc, row) => acc + row.dayToDayExpenses.totalAmount,
-    0
-  );
-  const salaryTotal = filteredRows.reduce(
-    (acc, row) => acc + row.salaries.totalAmount,
-    0
-  );
-  const ledgerTotal = filteredRows.reduce((acc, row) => {
-    const totalAmount = row.ledger.totalAmount || 0;
-    return acc + totalAmount;
-  }, 0);
-
-  const docChargeTotal = filterDataByDateRange(ledgerEntries).reduce(
-    (acc, entry) => {
-      const doccharge = parseFloat(entry.doccharge) || 0; // Convert to number
-      return acc + doccharge;
-    },
-    0
-  );
-  const interestTotal = filterDataByDateRange(apraisalentries).reduce(
-    (acc, entry) => {
-      const interestPrinciple = parseFloat(entry.interestPrinciple) || 0; // Convert to number
-      return acc + interestPrinciple;
-    },
-    0
-  );
-
-  const appraisalTotal = filteredRows.reduce(
-    (acc, row) => acc + row.appraisals.totalAmount,
-    0
-  );
-  const mdTotal = filteredRows.reduce(
-    (acc, row) => acc + row.vouchers.totalAmount,
-    0
-  );
-  const mdpaidTotal = filteredRows.reduce(
-    (acc, row) => acc + row.paidvoucher.totalAmount,
-    0
-  );
-
-  const handleDelete = async (id) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this expense!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await axios.delete(
-          `${process.env.REACT_APP_BACKEND_URL}/api/expenses/delete/${id}`
-        );
-
-        Swal.fire("Deleted!", "Expense deleted successfully.", "success");
-      } catch (error) {
-        console.error("Error deleting expense:", error);
-        Swal.fire("Failed!", "Failed to delete expense.", "error");
-      }
-    }
-  };
-
-  const handleDelete2 = async (id) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this salary payment!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await axios.delete(
-          `${process.env.REACT_APP_BACKEND_URL}/api/salary/delete/${id}`
-        );
-
-        Swal.fire(
-          "Deleted!",
-          "Salary payment deleted successfully.",
-          "success"
-        );
-      } catch (error) {
-        console.error("Error deleting salary payment:", error);
-        Swal.fire("Failed!", "Failed to delete salary payment.", "error");
-      }
-    }
-  };
   const handleDownloadExcel = () => {
     // Step 1: Get all tables in the `.paperbg` container
     const tables = document.querySelectorAll(".paperbg table");
@@ -500,6 +339,140 @@ const Reminders = () => {
     // Step 11: Write the workbook to a file and trigger the download
     writeFile(workbook, "customer-entry-details.xlsx");
   };
+
+  const handleDownloadPDF = async () => {
+    const input = document.querySelector(".paperbg");
+    const actionsColumn = document.querySelectorAll(".actions-column");
+
+    actionsColumn.forEach((cell) => {
+      cell.style.display = "none";
+    });
+
+    if (input) {
+      const canvas = await html2canvas(input, {
+        useCORS: true,
+        scale: 2,
+      });
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgWidth = pdf.internal.pageSize.width;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.height;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdf.internal.pageSize.height;
+      }
+
+      pdf.save("customer-entry-details.pdf");
+    }
+
+    actionsColumn.forEach((cell) => {
+      cell.style.display = "";
+    });
+  };
+  const dayToDayExpensesTotal = filteredRows.reduce(
+    (acc, row) => acc + row.dayToDayExpenses.totalAmount,
+    0
+  );
+  const salaryTotal = filteredRows.reduce(
+    (acc, row) => acc + row.salaries.totalAmount,
+    0
+  );
+  const ledgerTotal = filteredRows.reduce((acc, row) => {
+    const totalAmount = row.ledger.totalAmount || 0;
+    return acc + totalAmount;
+  }, 0);
+
+  const docChargeTotal = filterDataByDateRange(ledgerEntries).reduce(
+    (acc, entry) => {
+      const doccharge = parseFloat(entry.doccharge) || 0;
+      return acc + doccharge;
+    },
+    0
+  );
+  const interestTotal = filterDataByDateRange(apraisalentries).reduce(
+    (acc, entry) => {
+      const interestPrinciple = parseFloat(entry.interestPrinciple) || 0;
+      return acc + interestPrinciple;
+    },
+    0
+  );
+
+  const appraisalTotal = filteredRows.reduce(
+    (acc, row) => acc + row.appraisals.totalAmount,
+    0
+  );
+  const mdTotal = filteredRows.reduce(
+    (acc, row) => acc + row.vouchers.totalAmount,
+    0
+  );
+  const mdpaidTotal = filteredRows.reduce(
+    (acc, row) => acc + row.paidvoucher.totalAmount,
+    0
+  );
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this expense!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(
+          `${process.env.REACT_APP_BACKEND_URL}/api/expenses/delete/${id}`
+        );
+
+        Swal.fire("Deleted!", "Expense deleted successfully.", "success");
+      } catch (error) {
+        console.error("Error deleting expense:", error);
+        Swal.fire("Failed!", "Failed to delete expense.", "error");
+      }
+    }
+  };
+
+  const handleDelete2 = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this salary payment!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(
+          `${process.env.REACT_APP_BACKEND_URL}/api/salary/delete/${id}`
+        );
+
+        Swal.fire(
+          "Deleted!",
+          "Salary payment deleted successfully.",
+          "success"
+        );
+      } catch (error) {
+        console.error("Error deleting salary payment:", error);
+        Swal.fire("Failed!", "Failed to delete salary payment.", "error");
+      }
+    }
+  };
+
   const handleDelete3 = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -524,6 +497,7 @@ const Reminders = () => {
       }
     }
   };
+
   const handleDelete4 = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -563,9 +537,6 @@ const Reminders = () => {
   };
 
   const handleEditSubmit = async (form) => {
-   
-    console.log("clicked");
-
     const updatedExpense = {
       productName: form.productName.value,
       date: form.date.value,
@@ -587,7 +558,6 @@ const Reminders = () => {
       );
 
       if (response.ok) {
-        // Show success alert
         Swal.fire({
           icon: "success",
           title: "Expense Updated",
@@ -596,7 +566,6 @@ const Reminders = () => {
 
         handleEditClose();
       } else {
-    
         Swal.fire({
           icon: "error",
           title: "Update Failed",
@@ -612,6 +581,7 @@ const Reminders = () => {
       });
     }
   };
+
   const [salaryEditOpen, setSalaryEditOpen] = useState(false);
   const [currentSalary, setCurrentSalary] = useState(null);
 
@@ -624,9 +594,8 @@ const Reminders = () => {
     setSalaryEditOpen(false);
     setCurrentSalary(null);
   };
-  const handleSalaryEditSubmit = async (form) => {
-    console.log("clicked");
 
+  const handleSalaryEditSubmit = async (form) => {
     const updatedSalary = {
       employeeName: form.employeeName.value,
       designation: form.designation.value,
@@ -647,7 +616,6 @@ const Reminders = () => {
       );
 
       if (response.ok) {
-        // Show success alert
         Swal.fire({
           icon: "success",
           title: "Salary Updated",
@@ -656,7 +624,6 @@ const Reminders = () => {
 
         handleSalaryEditClose();
       } else {
-        // Show error alert
         Swal.fire({
           icon: "error",
           title: "Update Failed",
@@ -672,6 +639,7 @@ const Reminders = () => {
       });
     }
   };
+
   const [voucherEditOpen, setVoucherEditOpen] = useState(false);
   const [currentVoucher, setCurrentVoucher] = useState(null);
 
@@ -684,6 +652,7 @@ const Reminders = () => {
     setVoucherEditOpen(false);
     setCurrentVoucher(null);
   };
+
   const handleVoucherEditSubmit = async (form) => {
     const updatedVoucher = {
       name: form.name.value,
@@ -705,7 +674,6 @@ const Reminders = () => {
       );
 
       if (response.ok) {
-        // Show success alert
         Swal.fire({
           icon: "success",
           title: "Voucher Updated",
@@ -714,7 +682,6 @@ const Reminders = () => {
 
         handleVoucherEditClose();
       } else {
-        // Show error alert
         Swal.fire({
           icon: "error",
           title: "Update Failed",
@@ -730,22 +697,20 @@ const Reminders = () => {
       });
     }
   };
+
   const [paidVoucherEditOpen, setPaidVoucherEditOpen] = useState(false);
   const [currentPaidVoucher, setCurrentPaidVoucher] = useState(null);
 
-  // Open the dialog and set the current voucher to edit
   const handlePaidVoucherEditOpen = (paidVoucher) => {
     setCurrentPaidVoucher(paidVoucher);
     setPaidVoucherEditOpen(true);
   };
 
-  // Close the dialog
   const handlePaidVoucherEditClose = () => {
     setPaidVoucherEditOpen(false);
     setCurrentPaidVoucher(null);
   };
 
-  // Handle the edit voucher submission
   const handlePaidVoucherEditSubmit = async () => {
     const form = document.getElementById("edit-paid-voucher-form");
     const formData = new FormData(form);
@@ -794,7 +759,6 @@ const Reminders = () => {
   };
 
   const handleDelete6 = async (id) => {
-    // First confirmation dialog
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this Md voucher!",
@@ -806,7 +770,6 @@ const Reminders = () => {
     });
 
     if (result.isConfirmed) {
-      // Second dialog with a checkbox for double confirmation
       const secondResult = await Swal.fire({
         title: "Final Confirmation",
         html: `
@@ -847,788 +810,804 @@ const Reminders = () => {
   };
 
   return (
+    <div className="paperbg">
+    <div className="container mt-4">
+      <div className="card">
+      <div className="card-header bg-light text-dark">
+        <h5 className="text-center pt-2">DAY BOOK</h5>
+      </div>
+        <div className="card-body">
+        <div className="row mb-4">
+            {/* Year Dropdown */}
+            <div className="col">
+              <label className="form-label">Select Year:</label>
+              <select
+                className="form-select"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+              >
+                {[2022, 2023, 2024, 2025, 2026, 2027].map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-    <div className="card no-hover-card">
-    <div className="card-header daybook_header ">
-      <h5 className="text-center pt-2">  <FontAwesomeIcon icon={faCalculator} style={{ fontSize: "20px", color: "#373A8F",marginRight:"10px" }} />DAY BOOK</h5>
-    </div>
-      <div className="card-body p-5">
-      <div className="row mb-4">
-          {/* Year Dropdown */}
-          <div className="col">
-            <label className="form-label">Select Year:</label>
-            <select
-              className="form-select"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
+            {/* Start Date Picker */}
+            <div className="col">
+              <label className="form-label">Start Date:</label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+                isClearable
+              />
+            </div>
+
+            {/* End Date Picker */}
+            <div className="col">
+              <label className="form-label">End Date:</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+                isClearable
+              />
+            </div>
+
+            {/* PDF Download Button */}
+            <div className="col d-flex align-items-end">
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleDownloadPDF}
+              >
+                Download PDF
+              </button>
+            </div>
+
+            {/* Excel Download Button */}
+            <div className="col d-flex align-items-end">
+              <button
+                className="btn btn-success w-100"
+                onClick={handleDownloadExcel} 
+              >
+                Download Excel
+              </button>
+            </div>
+          </div>
+
+          {startDate && endDate && (
+            <div className="row g-2 mb-3">
+            {/* Row 1 */}
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
+                <span className="text-muted small me-2">Day to Day:</span>
+                <strong className="text-danger">{dayToDayExpensesTotal}</strong>
+              </div>
+            </div>
+          
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <InputIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />
+                <span className="text-muted small me-2">Received MD:</span>
+                <strong className="text-success">{mdTotal}</strong>
+              </div>
+            </div>
+          
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <InputIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />
+                <span className="text-muted small me-2">Doc Charge:</span>
+                <strong className="text-success">{docChargeTotal}</strong>
+              </div>
+            </div>
+          
+            {/* Row 2 */}
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <AccountBalance sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
+                <span className="text-muted small me-2">Ledger Loan:</span>
+                <strong className="text-danger">{ledgerTotal}</strong>
+              </div>
+            </div>
+          
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <PaymentsIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />
+                <span className="text-muted small me-2">Appraisal:</span>
+                <strong className="text-success">{appraisalTotal}</strong>
+              </div>
+            </div>
+          
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <Work sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
+                <span className="text-muted small me-2">Salary:</span>
+                <strong className="text-danger">{salaryTotal}</strong>
+              </div>
+            </div>
+          
+            {/* Paid to MD - full width if odd number, otherwise will fit naturally */}
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="d-flex align-items-center p-2 bg-light rounded">
+                <Work sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
+                <span className="text-muted small me-2">Paid to MD:</span>
+                <strong className="text-danger">{mdpaidTotal}</strong>
+              </div>
+            </div>
+          </div>
+          )}
+
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead className="table-dark">
+                <tr>
+                  <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle" }}>Opening Balance</th>
+                  <th colSpan={2}>Day To Day Expenses</th>
+                  <th colSpan={2}>Salary Amount</th>
+                  <th colSpan={2}>Received Amount from Md</th>
+                  <th colSpan={2}>Document Charge</th>
+                  <th colSpan={2}>Paid Amount to MD</th>
+                  <th colSpan={2}>Ledger Loan Amount</th>
+                  <th colSpan={2}>Appraisal Payment</th>
+                  <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle" }}>Closing Balance</th>
+                </tr>
+                <tr>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRows.map((row, index) => (
+                  <tr key={index}>
+                    <td>{row.openingBalance}</td>
+                    <td>{row.dayToDayExpenses.date}</td>
+                    <td>{row.dayToDayExpenses.totalAmount}</td>
+                    <td>{row.salaries.date}</td>
+                    <td>{row.salaries.totalAmount}</td>
+                    <td>{row.vouchers.date}</td>
+                    <td>{row.vouchers.totalAmount}</td>
+                    <td>{row.doccharge.date}</td>
+                    <td>{row.doccharge.totalAmount}</td>
+                    <td>{row.paidvoucher.date}</td>
+                    <td>{row.paidvoucher.totalAmount}</td>
+                    <td>{row.ledger.date}</td>
+                    <td>{row.ledger.totalAmount}</td>
+                    <td>{row.appraisals.date}</td>
+                    <td>{row.appraisals.totalAmount}</td>
+                    <td>{row.closingBalance}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-4">
+            <h4 className="text-center text-primary">Day-to-Day Expenses</h4>
+            <h6 className="text-danger text-end">
+              <i className="fas fa-rupee-sign me-2"></i>
+              <span className="fw-bold">Total:</span> {dayToDayExpensesTotal}
+            </h6>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Expense Details</th>
+                    <th>Date</th>
+                    <th>Total Rupees</th>
+                    <th>Quantity</th>
+                    <th>Weight</th>
+                    <th>Voucher No</th>
+                    <th className="actions-column">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(dayToDayExpenses).map((expense) => (
+                    <tr key={expense._id}>
+                      <td>{expense.productName}</td>
+                      <td>{expense.date}</td>
+                      <td>{expense.totalRupees}</td>
+                      <td>{expense.quantity}</td>
+                      <td>{expense.weight}</td>
+                      <td>{expense.voucherNo}</td>
+                      <td className="actions-column">
+                        <button
+                          className="btn btn-warning btn-sm me-2"
+                          onClick={() => handleEditOpen(expense)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete(expense._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <Dialog open={editOpen} onClose={handleEditClose} fullWidth maxWidth="md">
+            <DialogTitle
+              sx={{ textAlign: "center", color: "#194300", fontWeight: "600" }}
             >
-              {[2022, 2023, 2024, 2025, 2026, 2027].map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+              Edit Expense
+            </DialogTitle>
+            <DialogContent>
+              {currentExpense && (
+                <form id="edit-expense-form">
+                  {" "}
+                  {/* Form without onSubmit */}
+                  <div className="mb-3">
+                  <label className="form-label">Product Name</label>
+                  <input
+                    type="text"
+                    name="productName"
+                    defaultValue={currentExpense.productName}
+                    className="form-control"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Date</label>
+                  <input
+                    type="date"
+                    name="date"
+                    defaultValue={currentExpense.date.split("T")[0]}
+                    className="form-control"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Total Rupees</label>
+                  <input
+                    type="text"
+                    name="totalRupees"
+                    defaultValue={currentExpense.totalRupees}
+                    className="form-control"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Quantity</label>
+                  <input
+                    type="text"
+                    name="quantity"
+                    defaultValue={currentExpense.quantity}
+                    className="form-control"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Weight</label>
+                  <input
+                    type="text"
+                    name="weight"
+                    defaultValue={currentExpense.weight}
+                    className="form-control"
+                  />
+                </div>
+
+                </form>
+              )}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: "center", mb: 2 }}>
+              <Button
+                onClick={() =>
+                  handleEditSubmit(document.getElementById("edit-expense-form"))
+                }
+                color="success"
+                variant="contained"
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handleEditClose}
+                color="error"
+                variant="contained"
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
           </div>
 
-          {/* Start Date Picker */}
-          <div className="col">
-            <label className="form-label">Start Date:</label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              dateFormat="yyyy-MM-dd"
-              className="form-control"
-              isClearable
-            />
+          <div className="mt-4">
+            <h4 className="text-center text-success">Document Charge</h4>
+            <h6 className="text-success text-end">
+              <i className="fas fa-download me-2"></i>
+              <span className="fw-bold">Total:</span> {docChargeTotal}
+            </h6>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Customer ID</th>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Document Charge</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(ledgerEntries).map((entry) => (
+                    <tr key={entry._id}>
+                      <td>{entry.customerId}</td>
+                      <td>{entry.date}</td>
+                      <td>{entry.customerName}</td>
+                      <td>{entry.doccharge}</td>
+                      <td>{entry.loanAmount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* End Date Picker */}
-          <div className="col">
-            <label className="form-label">End Date:</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              dateFormat="yyyy-MM-dd"
-              className="form-control"
-              isClearable
-            />
-          </div>
+          <div className="mt-4">
+            <h4 className="text-center text-primary">Salary Payments</h4>
+            <h6 className="text-danger text-end">
+              <i className="fas fa-briefcase me-2"></i>
+              <span className="fw-bold">Total:</span> {salaryTotal}
+            </h6>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Designation</th>
+                    <th>Date</th>
+                    <th>Salary Amount</th>
+                    <th className="actions-column">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(salaries).map((payment) => (
+                    <tr key={payment._id}>
+                      <td>{payment.employeeName}</td>
+                      <td>{payment.designation}</td>
+                      <td>{payment.date}</td>
+                      <td>{payment.salaryAmount}</td>
+                      <td className="actions-column">
+                        <button
+                          className="btn btn-warning btn-sm me-2"
+                          onClick={() => handleSalaryEditOpen(payment)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete2(payment._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          {/* PDF Download Button */}
-          <div className="col d-flex align-items-end">
-            <button
-              className="btn btn-primary w-100"
-              onClick={handleDownloadPDF}
+            <Dialog open={salaryEditOpen} onClose={handleSalaryEditClose} fullWidth maxWidth="md">
+            <DialogTitle
+              sx={{ textAlign: "center", color: "#194300", fontWeight: "600" }}
             >
-              Download PDF
-            </button>
+              Edit Salary Payment
+            </DialogTitle>
+            <DialogContent>
+              {currentSalary && (
+                <form id="edit-salary-form">
+                 <div className="mb-3">
+                    <label className="form-label">Employee Name</label>
+                    <input
+                      type="text"
+                      name="employeeName"
+                      defaultValue={currentSalary.employeeName}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Designation</label>
+                    <input
+                      type="text"
+                      name="designation"
+                      defaultValue={currentSalary.designation}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Date</label>
+                    <input
+                      type="date"
+                      name="date"
+                      defaultValue={currentSalary.date.split("T")[0]}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Salary Amount</label>
+                    <input
+                      type="text"
+                      name="salaryAmount"
+                      defaultValue={currentSalary.salaryAmount}
+                      className="form-control"
+                    />
+                  </div>
+
+                </form>
+              )}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: "center", mb: 2 }}>
+              <Button
+                onClick={() =>
+                  handleSalaryEditSubmit(
+                    document.getElementById("edit-salary-form")
+                  )
+                }
+                color="success"
+                variant="contained"
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handleSalaryEditClose}
+                color="error"
+                variant="contained"
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
           </div>
 
-          {/* Excel Download Button */}
-          <div className="col d-flex align-items-end">
-            <button
-              className="btn btn-success w-100"
-              onClick={handleDownloadExcel} 
+          <div className="mt-4">
+            <h4 className="text-center text-success">MD Voucher</h4>
+            <h6 className="text-success text-end">
+              <i className="fas fa-download me-2"></i>
+              <span className="fw-bold">Total:</span> {mdTotal}
+            </h6>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Purpose</th>
+                    <th className="actions-column">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(vouchers).map((voucher) => (
+                    <tr key={voucher._id}>
+                      <td>{voucher.name}</td>
+                      <td>{voucher.amount}</td>
+                      <td>{voucher.date}</td>
+                      <td>{voucher.purposeOfAmount}</td>
+                      <td className="actions-column">
+                        <button
+                          className="btn btn-warning btn-sm me-2"
+                          onClick={() => handleVoucherEditOpen(voucher)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete3(voucher._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <Dialog open={voucherEditOpen} onClose={handleVoucherEditClose} fullWidth maxWidth="md">
+            <DialogTitle
+              sx={{ textAlign: "center", color: "#194300", fontWeight: "600" }}
             >
-              Download Excel
-            </button>
-          </div>
-        </div>
+              Edit Voucher
+            </DialogTitle>
+            <DialogContent>
+              {currentVoucher && (
+                <form id="edit-voucher-form">
+                  <div className="mb-3">
+                    <label className="form-label">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      defaultValue={currentVoucher.name}
+                      className="form-control"
+                    />
+                  </div>
 
-        {startDate && endDate && (
-          <div className="row g-2 mb-3">
-          {/* Row 1 */}
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
-              <span className="text-muted small me-2">Day to Day:</span>
-              <strong className="text-danger">{dayToDayExpensesTotal}</strong>
-            </div>
-          </div>
-        
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <InputIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />
-              <span className="text-muted small me-2">Received MD:</span>
-              <strong className="text-success">{mdTotal}</strong>
-            </div>
-          </div>
-        
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <InputIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />
-              <span className="text-muted small me-2">Doc Charge:</span>
-              <strong className="text-success">{docChargeTotal}</strong>
-            </div>
-          </div>
-        
-          {/* Row 2 */}
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <AccountBalance sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
-              <span className="text-muted small me-2">Ledger Loan:</span>
-              <strong className="text-danger">{ledgerTotal}</strong>
-            </div>
-          </div>
-        
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <PaymentsIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />
-              <span className="text-muted small me-2">Appraisal:</span>
-              <strong className="text-success">{appraisalTotal}</strong>
-            </div>
-          </div>
-        
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <Work sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
-              <span className="text-muted small me-2">Salary:</span>
-              <strong className="text-danger">{salaryTotal}</strong>
-            </div>
-          </div>
-        
-          {/* Paid to MD - full width if odd number, otherwise will fit naturally */}
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="d-flex align-items-center p-2 bg-light rounded">
-              <Work sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />
-              <span className="text-muted small me-2">Paid to MD:</span>
-              <strong className="text-danger">{mdpaidTotal}</strong>
-            </div>
-          </div>
-        </div>
-        )}
+                  <div className="mb-3">
+                    <label className="form-label">Amount</label>
+                    <input
+                      type="text"
+                      name="amount"
+                      defaultValue={currentVoucher.amount}
+                      className="form-control"
+                    />
+                  </div>
 
-        <div className="table-responsive p-3">
-          <table className="table table-bordered">
-          <thead  className='reminer_table 'style={{ backgroundColor: "#f9fff7" }}>
+                  <div className="mb-3">
+                    <label className="form-label">Date</label>
+                    <input
+                      type="date"
+                      name="date"
+                      defaultValue={currentVoucher.date.split("T")[0]}
+                      className="form-control"
+                    />
+                  </div>
 
-              <tr>
-                <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle" }}>Opening Balance</th>
-                <th colSpan={2}>Day To Day Expenses</th>
-                <th colSpan={2}>Salary Amount</th>
-                <th colSpan={2}>Received Amount from Md</th>
-                <th colSpan={2}>Document Charge</th>
-                <th colSpan={2}>Paid Amount to MD</th>
-                <th colSpan={2}>Ledger Loan Amount</th>
-                <th colSpan={2}>Appraisal Payment</th>
-                <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle" }}>Closing Balance</th>
-              </tr>
-              <tr>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Total</th>
-                <th>Date</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.openingBalance}</td>
-                  <td>{row.dayToDayExpenses.date}</td>
-                  <td>{row.dayToDayExpenses.totalAmount}</td>
-                  <td>{row.salaries.date}</td>
-                  <td>{row.salaries.totalAmount}</td>
-                  <td>{row.vouchers.date}</td>
-                  <td>{row.vouchers.totalAmount}</td>
-                  <td>{row.doccharge.date}</td>
-                  <td>{row.doccharge.totalAmount}</td>
-                  <td>{row.paidvoucher.date}</td>
-                  <td>{row.paidvoucher.totalAmount}</td>
-                  <td>{row.ledger.date}</td>
-                  <td>{row.ledger.totalAmount}</td>
-                  <td>{row.appraisals.date}</td>
-                  <td>{row.appraisals.totalAmount}</td>
-                  <td>{row.closingBalance}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  <div className="mb-3">
+                    <label className="form-label">Purpose</label>
+                    <input
+                      type="text"
+                      name="purposeOfAmount"
+                      defaultValue={currentVoucher.purposeOfAmount}
+                      className="form-control"
+                    />
+                  </div>
+                </form>
+              )}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: "center", mb: 2 }}>
+              <Button
+                onClick={() =>
+                  handleVoucherEditSubmit(
+                    document.getElementById("edit-voucher-form")
+                  )
+                }
+                color="success"
+                variant="contained"
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handleVoucherEditClose}
+                color="error"
+                variant="contained"
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+          </div>
 
-        <div className="mt-4 p-3 ">
-          <h4 className="text-center text-blue ">Day-to-Day Expenses</h4>
-          <h6 className="text-danger text-end">
-            <i className="fas fa-rupee-sign me-2"></i>
-            <span className="fw-bold">  <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />Total:</span> {dayToDayExpensesTotal}
-          </h6>
-          <div className="table-responsive">
-            <table className="table table-bordered p-4">
-              <thead className="table-dark ">
-                <tr>
-                  <th className="table_padding">Expense Details</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding">Total Rupees</th>
-                  <th className="table_padding">Quantity</th>
-                  <th className="table_padding">Weight</th>
-                  <th className="table_padding">Voucher No</th>
-                  <th className="actions-column table_padding">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(dayToDayExpenses).map((expense) => (
-                  <tr key={expense._id}>
-                    <td className="table_padding">{expense.productName}</td>
-                    <td className="table_padding">{expense.date}</td>
-                    <td className="table_padding">{expense.totalRupees}</td>
-                    <td className="table_padding">{expense.quantity}</td>
-                    <td className="table_padding">{expense.weight}</td>
-                    <td className="table_padding">{expense.voucherNo}</td>
-                    <td className="actions-column table_padding">
-                      <button
-                        className="btn btn-warning btn-sm me-2"
-                        onClick={() => handleEditOpen(expense)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete(expense._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
+          <div className="mt-4">
+            <h4 className="text-center text-primary">Ledger Entries</h4>
+            <h6 className="text-danger text-end">
+              <i className="fas fa-wallet me-2"></i>
+              <span className="fw-bold">Total:</span> {ledgerTotal}
+            </h6>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Customer ID</th>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Document Charge</th>
+                    <th>Amount</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(ledgerEntries).map((entry) => (
+                    <tr key={entry._id}>
+                      <td>{entry.customerId}</td>
+                      <td>{entry.date}</td>
+                      <td>{entry.customerName}</td>
+                      <td>{entry.doccharge}</td>
+                      <td>{entry.loanAmount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div className="modal fade" id="editExpenseModal" tabIndex="-1" aria-labelledby="editExpenseModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="editExpenseModalLabel">Edit Expense</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                  {currentExpense && (
-                    <form id="edit-expense-form">
-                      <div className="mb-3">
-                        <label className="form-label">Product Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="productName"
-                          defaultValue={currentExpense.productName}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="date"
-                          defaultValue={currentExpense.date.split("T")[0]}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Total Rupees</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          name="totalRupees"
-                          defaultValue={currentExpense.totalRupees}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Quantity</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="quantity"
-                          defaultValue={currentExpense.quantity}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Weight</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="weight"
-                          defaultValue={currentExpense.weight}
-                        />
-                      </div>
-                    </form>
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() =>
-                      handleEditSubmit(document.getElementById("edit-expense-form"))
-                    }
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handleEditClose}
-                  >
-                    Cancel
-                  </button>
-                </div>
+          <div className="mt-4">
+            <h4 className="text-center text-primary">Paid Voucher to MD</h4>
+            <h6 className="text-danger text-end">
+              <i className="fas fa-wallet me-2"></i>
+              <span className="fw-bold">Total:</span> {mdpaidTotal}
+            </h6>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Purpose</th>
+                    <th className="actions-column">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(paidvoucher).map((paidvoucher) => (
+                    <tr key={paidvoucher._id}>
+                      <td>{paidvoucher.name}</td>
+                      <td>{paidvoucher.amount}</td>
+                      <td>{paidvoucher.date}</td>
+                      <td>{paidvoucher.purposeOfAmount}</td>
+                      <td className="actions-column">
+                        <button
+                          className="btn btn-warning btn-sm me-2"
+                          onClick={() => handlePaidVoucherEditOpen(paidvoucher)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete4(paidvoucher._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <Dialog
+            open={paidVoucherEditOpen}
+            onClose={handlePaidVoucherEditClose} fullWidth maxWidth="md"
+          >
+            <DialogTitle
+              sx={{ textAlign: "center", color: "#194300", fontWeight: "600" }}
+            >
+              Edit Paid Voucher
+            </DialogTitle>
+            <DialogContent>
+              {currentPaidVoucher && (
+                <form id="edit-paid-voucher-form">
+                  <div className="mb-3">
+                    <label className="form-label">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      defaultValue={currentPaidVoucher.name}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Amount</label>
+                    <input
+                      type="text"
+                      name="amount"
+                      defaultValue={currentPaidVoucher.amount}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Date</label>
+                    <input
+                      type="date"
+                      name="date"
+                      defaultValue={currentPaidVoucher.date.split("T")[0]}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Purpose</label>
+                    <input
+                      type="text"
+                      name="purposeOfAmount"
+                      defaultValue={currentPaidVoucher.purposeOfAmount}
+                      className="form-control"
+                    />
+                  </div>
+
+                </form>
+              )}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: "center", mb: 2 }}>
+              <Button
+                onClick={() => handlePaidVoucherEditSubmit()}
+                color="success"
+                variant="contained"
+                style={{ fontWeight: 600 }}
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handlePaidVoucherEditClose}
+                color="error"
+                variant="contained"
+                style={{ fontWeight: 600 }}
+              >
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+          </div>
+
+          <div className="mt-4">
+            <h4 className="text-center text-success">Appraisal Entries</h4>
+            <div className="row">
+              <div className="col-md-6">
+                <h6 className="text-primary">
+                  Interest Total: {interestTotal}
+                </h6>
+              </div>
+              <div className="col-md-6">
+                <h6 className="text-success text-end">
+                  <i className="fas fa-money-bill-wave me-2"></i>
+                  <span className="fw-bold">Total:</span> {appraisalTotal}
+                </h6>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="mt-4 p-3">
-          <h4 className="text-center text-green">Document Charge</h4>
-          <h6 className="text-success text-end">
-            <i className="fas fa-download me-2"></i>
-            <span className="fw-bold">  <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />Total:</span> {docChargeTotal}
-          </h6>
-          <div className="table-responsive">
-            <table className="table table-bordered">
-              <thead className="table-dark">
-                <tr>
-                  <th className="table_padding">Customer ID</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding">Customer Name</th>
-                  <th className="table_padding">Document Charge</th>
-                  <th className="table_padding">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(ledgerEntries).map((entry) => (
-                  <tr key={entry._id}>
-                    <td className="table_padding">{entry.customerId}</td>
-                    <td className="table_padding">{entry.date}</td>
-                    <td className="table_padding">{entry.customerName}</td>
-                    <td className="table_padding">{entry.doccharge}</td>
-                    <td className="table_padding">{entry.loanAmount}</td>
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>Customer ID</th>
+                    <th>Loan Number</th>
+                    <th>Date</th>
+                    <th>Principle Paid</th>
+                    <th>Interest Paid</th>
+                    <th>Balance</th>
+                    <th className="actions-column">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="mt-4 p-3">
-          <h4 className="text-center text-blue ">Salary Payments</h4>
-          <h6 className="text-danger text-end">
-            <i className="fas fa-briefcase me-2"></i>
-            <span className="fw-bold">  <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />Total:</span> {salaryTotal}
-          </h6>
-          <div className="table-responsive">
-            <table className="table table-bordered ">
-              <thead className="table-dark ">
-                <tr className="table_padding">
-                  <th className="table_padding">Employee Name</th>
-                  <th className="table_padding">Designation</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding">Salary Amount</th>
-                  <th className="actions-column table_padding">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(salaries).map((payment) => (
-                  <tr key={payment._id}>
-                    <td className="table_padding">{payment.employeeName}</td>
-                    <td className="table_padding">{payment.designation}</td>
-                    <td className="table_padding">{payment.date}</td>
-                    <td className="table_padding">{payment.salaryAmount}</td>
-                    <td className="actions-column table_padding">
-                      <button
-                        className="btn btn-warning btn-sm me-2"
-                        onClick={() => handleSalaryEditOpen(payment)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete2(payment._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="modal fade" id="editSalaryModal" tabIndex="-1" aria-labelledby="editSalaryModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="editSalaryModalLabel">Edit Salary Payment</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                  {currentSalary && (
-                    <form id="edit-salary-form">
-                      <div className="mb-3">
-                        <label className="form-label">Employee Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="employeeName"
-                          defaultValue={currentSalary.employeeName}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Designation</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="designation"
-                          defaultValue={currentSalary.designation}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="date"
-                          defaultValue={currentSalary.date.split("T")[0]}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Salary Amount</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          name="salaryAmount"
-                          defaultValue={currentSalary.salaryAmount}
-                        />
-                      </div>
-                    </form>
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() =>
-                      handleSalaryEditSubmit(document.getElementById("edit-salary-form"))
-                    }
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handleSalaryEditClose}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+                </thead>
+                <tbody>
+                  {filterDataByDateRange(apraisalentries).map((appraisal) => (
+                    <tr key={appraisal._id}>
+                      <td>{appraisal.customerId}</td>
+                      <td>{appraisal.loanNo}</td>
+                      <td>{appraisal.paymentDate}</td>
+                      <td>{appraisal.interestamount}</td>
+                      <td>{appraisal.interestPrinciple}</td>
+                      <td>{appraisal.balance}</td>
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleDelete6(appraisal._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </div>
-
-        <div className="mt-4 p-3">
-          <h4 className="text-center text-green ">MD Voucher</h4>
-          <h6 className="text-success text-end">
-            <i className="fas fa-download me-2"></i>
-            <span className="fw-bold"> <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} />Total:</span> {mdTotal}
-          </h6>
-          <div className="table-responsive">
-            <table className="table table-bordered">
-              <thead className="table-dark">
-                <tr>
-                  <th className="table_padding">Name</th>
-                  <th className="table_padding">Amount</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding">Purpose</th>
-                  <th className="actions-column table_padding">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(vouchers).map((voucher) => (
-                  <tr key={voucher._id}>
-                    <td className="table_padding">{voucher.name}</td>
-                    <td className="table_padding">{voucher.amount}</td>
-                    <td className="table_padding">{voucher.date}</td>
-                    <td className="table_padding">{voucher.purposeOfAmount}</td>
-                    <td className="actions-column table_padding">
-                      <button
-                        className="btn btn-warning btn-sm me-2"
-                        onClick={() => handleVoucherEditOpen(voucher)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete3(voucher._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="modal fade" id="editVoucherModal" tabIndex="-1" aria-labelledby="editVoucherModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="editVoucherModalLabel">Edit Voucher</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                  {currentVoucher && (
-                    <form id="edit-voucher-form">
-                      <div className="mb-3">
-                        <label className="form-label">Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="name"
-                          defaultValue={currentVoucher.name}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Amount</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          name="amount"
-                          defaultValue={currentVoucher.amount}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="date"
-                          defaultValue={currentVoucher.date.split("T")[0]}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Purpose</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="purposeOfAmount"
-                          defaultValue={currentVoucher.purposeOfAmount}
-                        />
-                      </div>
-                    </form>
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() =>
-                      handleVoucherEditSubmit(document.getElementById("edit-voucher-form"))
-                    }
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handleVoucherEditClose}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 p-3">
-          <h4 className="text-center text-blue">Ledger Entries</h4>
-          <h6 className="text-danger text-end">
-            <i className="fas fa-wallet me-2"></i>
-            <span className="fw-bold"><CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />Total:</span> {ledgerTotal}
-          </h6>
-          <div className="table-responsive">
-            <table className="table table-bordered">
-              <thead className="table-dark">
-                <tr>
-                  <th className="table_padding">Customer ID</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding">Customer Name</th>
-                  <th className="table_padding">Document Charge</th>
-                  <th className="table_padding">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(ledgerEntries).map((entry) => (
-                  <tr key={entry._id}>
-                    <td className="table_padding">{entry.customerId}</td>
-                    <td className="table_padding">{entry.date}</td>
-                    <td className="table_padding">{entry.customerName}</td>
-                    <td className="table_padding">{entry.doccharge}</td>
-                    <td className="table_padding">{entry.loanAmount}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="mt-4 p-3">
-          <h4 className="text-center text-blue  ">Paid Voucher to MD</h4>
-          <h6 className="text-danger text-end">
-            <i className="fas fa-wallet me-2"></i>
-            <span className="fw-bold"> <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#dc3545' }} />Total:</span> {mdpaidTotal}
-          </h6>
-          <div className="table-responsive">
-            <table className="table table-bordered">
-              <thead className="table-dark">
-                <tr>
-                  <th className="table_padding">Name</th>
-                  <th className="table_padding">Amount</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding" >Purpose</th>
-                  <th className="actions-column table_padding">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(paidvoucher).map((paidvoucher) => (
-                  <tr key={paidvoucher._id}>
-                    <td className="table_padding">{paidvoucher.name}</td>
-                    <td className="table_padding">{paidvoucher.amount}</td>
-                    <td className="table_padding">{paidvoucher.date}</td>
-                    <td className="table_padding">{paidvoucher.purposeOfAmount}</td>
-                    <td className="actions-column table_padding">
-                      <button
-                        className="btn btn-warning btn-sm me-2"
-                        onClick={() => handlePaidVoucherEditOpen(paidvoucher)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete4(paidvoucher._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="modal fade" id="editPaidVoucherModal" tabIndex="-1" aria-labelledby="editPaidVoucherModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="editPaidVoucherModalLabel">Edit Paid Voucher</h5>
-                  <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                  {currentPaidVoucher && (
-                    <form id="edit-paid-voucher-form">
-                      <div className="mb-3">
-                        <label className="form-label">Name</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="name"
-                          defaultValue={currentPaidVoucher.name}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Amount</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          name="amount"
-                          defaultValue={currentPaidVoucher.amount}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Date</label>
-                        <input
-                          type="date"
-                          className="form-control"
-                          name="date"
-                          defaultValue={currentPaidVoucher.date.split("T")[0]}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Purpose</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="purposeOfAmount"
-                          defaultValue={currentPaidVoucher.purposeOfAmount}
-                        />
-                      </div>
-                    </form>
-                  )}
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={() => handlePaidVoucherEditSubmit()}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={handlePaidVoucherEditClose}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 p-3">
-          <h4 className="text-center text-blue ">Appraisal Entries</h4>
-          <div className="row">
-            <div className="col-md-6">
-              <h6 className="text-primary">
-                Interest Total: {interestTotal}
-              </h6>
-            </div>
-            <div className="col-md-6">
-              <h6 className="text-success text-end">
-                <i className="fas fa-money-bill-wave me-2"></i>
-                <span className="fw-bold"> <CurrencyRupeeIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#198754' }} /> Total:</span> {appraisalTotal}
-              </h6>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table className="table table-bordered">
-              <thead className="table-dark">
-                <tr>
-                  <th className="table_padding">Customer ID</th>
-                  <th className="table_padding">Loan Number</th>
-                  <th className="table_padding">Date</th>
-                  <th className="table_padding">Principle Paid</th>
-                  <th className="table_padding">Interest Paid</th>
-                  <th className="table_padding">Balance</th>
-                  <th className="actions-column table_padding">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filterDataByDateRange(apraisalentries).map((appraisal) => (
-                  <tr key={appraisal._id}>
-                    <td className="table_padding">{appraisal.customerId}</td>
-                    <td className="table_padding">{appraisal.loanNo}</td>
-                    <td className="table_padding">{appraisal.paymentDate}</td>
-                    <td className="table_padding">{appraisal.interestamount}</td>
-                    <td className="table_padding">{appraisal.interestPrinciple}</td>
-                    <td className="table_padding">{appraisal.balance}</td>
-                    <td>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleDelete6(appraisal._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
     </div>
- 
-);
+    </div>
+  );
 };
 
 export default Reminders;

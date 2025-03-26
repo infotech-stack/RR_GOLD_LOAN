@@ -193,19 +193,36 @@ router.get("/all", async (req, res) => {
     const ledgers = await Ledger.find();
 
     for (const ledger of ledgers) {
-      const latestLoanEntry = await LoanEntry.findOne({ loanNo: ledger.loanNumber })
-        .sort({ paymentDate: -1 })
-        .limit(1);
+      const loanEntries = await LoanEntry.find({ loanNo: ledger.loanNumber })
+        .sort({ paymentDate: 1 }); // Sort in ascending order
 
-      let loanamountbalance;
+      if (loanEntries.length > 0) {
+        let loanamountbalance = ledger.loanAmount; // Initialize with loan amount
 
-      if (latestLoanEntry) {
-        loanamountbalance = ledger.loanAmount - latestLoanEntry.interestamount;
-      } else {
-        loanamountbalance = ledger.loanAmount;
+        for (let i = 0; i < loanEntries.length; i++) {
+          const entry = loanEntries[i];
+
+          if (i === 0) {
+            // First payment: subtract from the ledger's original loan amount
+            loanamountbalance -= entry.interestamount;
+          } else {
+            // Subsequent payments: subtract from the previous entry's balance
+            loanamountbalance -= entry.interestamount;
+          }
+
+          // Update the balance field in LoanEntry
+          await LoanEntry.updateOne(
+            { _id: entry._id },
+            { balance: loanamountbalance }
+          );
+        }
+
+        // Update the ledger's balance
+        await Ledger.updateOne(
+          { _id: ledger._id },
+          { loanamountbalance: loanamountbalance }
+        );
       }
-
-      await Ledger.updateOne({ _id: ledger._id }, { loanamountbalance: loanamountbalance });
     }
 
     const updatedLedgers = await Ledger.find();
@@ -215,6 +232,8 @@ router.get("/all", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
 
 
 
@@ -251,6 +270,7 @@ router.get("/merged-loan-data", async (req, res) => {
           date: ledger.date,
           loanNumber:ledger.loanNumber,
           lastDateForLoan: ledger.lastDateForLoan,
+          loanamountbalance: loanamountbalance,
           interest: ledger.interest,
         };
 
@@ -326,7 +346,7 @@ router.get("/merged-loan-data", async (req, res) => {
 
         // Update interest in the response
         ledgerData.interest = Math.round(interest / 10) * 10;
-
+        ledger.loanamountbalance = loanamountbalance; 
         // Update schema and percent in the response
         ledgerData.schema = updatedSchema;
         ledgerData.percent = updatedPercent;
@@ -343,6 +363,7 @@ router.get("/merged-loan-data", async (req, res) => {
               percent: updatedPercent,
               interest: ledger.interest,
               isSchemaUpdated: ledger.isSchemaUpdated,
+              loanamountbalance: ledger.loanamountbalance,
             },
           }
         );
