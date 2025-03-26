@@ -270,7 +270,7 @@ router.get("/merged-loan-data", async (req, res) => {
           date: ledger.date,
           loanNumber:ledger.loanNumber,
           lastDateForLoan: ledger.lastDateForLoan,
-          loanamountbalance: loanamountbalance,
+         
           interest: ledger.interest,
         };
 
@@ -346,7 +346,7 @@ router.get("/merged-loan-data", async (req, res) => {
 
         // Update interest in the response
         ledgerData.interest = Math.round(interest / 10) * 10;
-        ledger.loanamountbalance = loanamountbalance; 
+       
         // Update schema and percent in the response
         ledgerData.schema = updatedSchema;
         ledgerData.percent = updatedPercent;
@@ -363,7 +363,7 @@ router.get("/merged-loan-data", async (req, res) => {
               percent: updatedPercent,
               interest: ledger.interest,
               isSchemaUpdated: ledger.isSchemaUpdated,
-              loanamountbalance: ledger.loanamountbalance,
+           
             },
           }
         );

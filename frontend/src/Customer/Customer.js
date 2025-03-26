@@ -767,11 +767,11 @@ useEffect(() => {
     backgroundColor: "#F5F5F5",
   }}
 >
-  ₹ {
-    // Find the matching loan data for this entry using loanNumber
-    loanData.find(loan => loan.loanNumber === entry.loanNumber)?.loanamountbalance 
-    || entry.loanAmount
-  }
+₹ {entry.loanamountbalance === null 
+      ? entry.loanAmount  
+      : entry.loanamountbalance === "0" || entry.loanamountbalance === 0 
+      ? "0"              
+      : entry.loanamountbalance}
 </TableCell>
                  
                  
