@@ -24,15 +24,19 @@ app.use(
   })
 );
 
-// Use local MongoDB instead of Atlas
-const mongoURI = process.env.MONGO_LOCAL_URI || "mongodb://localhost:27017/RR_Gold_Loan";
+const atlasDB = process.env.MONGO_CLOUD_URI;
+console.log("MongoDB URI:", atlasDB); // Debugging Log
 
 (async () => {
   try {
-    await mongoose.connect(mongoURI);
-    console.log("Connected to MongoDB:", mongoURI);
+    await mongoose.connect(atlasDB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log("MongoDB Connected Successfully");
   } catch (err) {
-    console.error("Error connecting to MongoDB:", err);
+    console.error("Error connecting to MongoDB Atlas:", err);
   }
 })();
 
