@@ -19,7 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import image from "../../src/Navbar/KRT Gold Finance Logo PNG File.png";
+import image from "../Navbar/RR Gold Loan Logo.jpeg";
 const PrintDialog = ({ open, onClose, data }) => {
   const [file, setFile] = useState(null);
   const [customerFile, setCustomerFile] = useState(null);
@@ -91,21 +91,21 @@ const PrintDialog = ({ open, onClose, data }) => {
                     <img
                       src={image}
                       alt="Logo"
-                      style={{ width: "100%", height: "auto" }}
+                      style={{ width: "50%", height: "auto" }}
                     />
                   </Grid>
                   <Grid item xs={12} sm={8}>
                     <Typography variant="h5" align="center" gutterBottom>
-                      KRT GOLD FINANCE
+                    RR GOLD FINANCE
                     </Typography>
-                    <Typography variant="subtitle1" align="center">
+                    {/* <Typography variant="subtitle1" align="center">
                       Cell No: 9042425142, 9042425642
                     </Typography>
                     <Typography variant="body1" align="center" gutterBottom>
                       135/5 Velavan Complex, Near (MGN) Lodge, Salem Main Road,
                       <br />
                       Komarapalayam-638183
-                    </Typography>
+                    </Typography> */}
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="subtitle1" align="center">
