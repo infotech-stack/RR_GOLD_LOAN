@@ -810,7 +810,7 @@ const Reminders = () => {
   };
 
   return (
-    <div className="paperbg">
+
     <div className="container mt-4">
       <div className="card">
       <div className="card-header bg-light text-dark">
@@ -999,7 +999,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-primary">Day-to-Day Expenses</h4>
+            <h4 className="text-center text-primary fs-5">Day-to-Day Expenses</h4>
             <h6 className="text-danger text-end">
               <i className="fas fa-rupee-sign me-2"></i>
               <span className="fw-bold">Total:</span> {dayToDayExpensesTotal}
@@ -1132,7 +1132,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-success">Document Charge</h4>
+            <h4 className="text-center text-success fs-5">Document Charge</h4>
             <h6 className="text-success text-end">
               <i className="fas fa-download me-2"></i>
               <span className="fw-bold">Total:</span> {docChargeTotal}
@@ -1164,7 +1164,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-primary">Salary Payments</h4>
+            <h4 className="text-center text-primary fs-5">Salary Payments</h4>
             <h6 className="text-danger text-end">
               <i className="fas fa-briefcase me-2"></i>
               <span className="fw-bold">Total:</span> {salaryTotal}
@@ -1283,7 +1283,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-success">MD Voucher</h4>
+            <h4 className="text-center text-success fs-5">MD Voucher</h4>
             <h6 className="text-success text-end">
               <i className="fas fa-download me-2"></i>
               <span className="fw-bold">Total:</span> {mdTotal}
@@ -1401,7 +1401,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-primary">Ledger Entries</h4>
+            <h4 className="text-center text-primary fs-5">Ledger Entries</h4>
             <h6 className="text-danger text-end">
               <i className="fas fa-wallet me-2"></i>
               <span className="fw-bold">Total:</span> {ledgerTotal}
@@ -1433,7 +1433,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-primary">Paid Voucher to MD</h4>
+            <h4 className="text-center text-primary fs-5">Paid Voucher to MD</h4>
             <h6 className="text-danger text-end">
               <i className="fas fa-wallet me-2"></i>
               <span className="fw-bold">Total:</span> {mdpaidTotal}
@@ -1553,7 +1553,7 @@ const Reminders = () => {
           </div>
 
           <div className="mt-4">
-            <h4 className="text-center text-success">Appraisal Entries</h4>
+            <h4 className="text-center text-success fs-5">Appraisal Entries</h4>
             <div className="row">
               <div className="col-md-6">
                 <h6 className="text-primary">
@@ -1606,7 +1606,7 @@ const Reminders = () => {
         </div>
       </div>
     </div>
-    </div>
+ 
   );
 };
 

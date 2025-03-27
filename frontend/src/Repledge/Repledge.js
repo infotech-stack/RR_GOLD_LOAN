@@ -83,8 +83,6 @@ const translations = {
   },
   tamil: {
     title: "ஆர்.ஆர்.கோல்டு பைனான்ஸ்",
-    address:
-      "",
     pledgeDetails:
       "காவல்துறை மற்றும் நிறுவனத்திற்கான தங்கம் அடகு / விற்பனை உறுதிமொழி பத்திரம்",
     sender: "அனுப்புநர்",
@@ -353,10 +351,13 @@ const Repledge = () => {
             >
               {t.title}
             </Typography>
-            <Typography align="center" className="tit">
-              {t.address}
-            </Typography>
-            <Typography align="center" className="tit">
+            <Typography align="center" className="tit mt-1 ,mb-2">
+  Cell No:9488279090, 9489719090<br />
+  960, Main Road, (Opp. Dhana Book Nilayam)<br />
+  BHAVANI - 638 301. Erode Dt
+</Typography>
+
+            <Typography align="center" className="tit mt-2">
               {t.pledgeDetails}
             </Typography>
             <Typography variant="h6" className="title">

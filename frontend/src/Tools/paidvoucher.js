@@ -112,14 +112,14 @@ const PaidVoucher = () => {
               >
                 RR GOLD FINANCE
               </Typography>
-              {/* <Typography variant="subtitle1" align="center">
-                Cell No: 9042425142, 9042425642
-              </Typography>
-              <Typography variant="body1" align="center" gutterBottom>
-                135/5 Velavan Complex, Near (MGN) Lodge, Salem Main Road,
-                <br />
-                Komarapalayam-638183
-              </Typography> */}
+               <Typography variant="subtitle1" align="center">
+                             Cell No: 9488279090, 9489719090
+                             </Typography>
+                             <Typography variant="body1" align="center" gutterBottom>
+                             960, Main Road, (Opp. Dhana Book Nilayam)
+                               <br />
+                               BHAVANI - 638 301. Erode Dt
+                             </Typography>
             </Grid>
             <Grid item xs={12}>
               <Typography

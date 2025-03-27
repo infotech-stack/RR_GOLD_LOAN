@@ -70,7 +70,7 @@ const Books = () => {
     if (!customerData.rupeesInWords)
       errors.rupeesInWords = "Rupees In Words is required";
 
-  
+    if (!customerData.iw) errors.iw = "Weight is required";
     if (!customerData.lastDateForLoan)
       errors.lastDateForLoan = "Last Date For Loan is required";
 
@@ -132,27 +132,25 @@ const Books = () => {
           case "companyName":
             return (
               <Typography className="font-tamill">
-                 
-                ஆர்.ஆர்.கோல்டு பைனான்ஸ்
+                ஆர்.ஆர் கோல்டு பைனான்ஸ்
               </Typography>
             );
           case "cellNumbers":
             return (
               <Typography className="font-tamil">
-                செல் நம்பர்: 9042425142, 9042425642
+                Mob No: 9488279090, 9489719090
               </Typography>
             );
           case "addressLine1":
             return (
               <Typography className="font-tamil">
-                135/5, வேலவன் காம்ப்ளெக்ஸ், (M.G.N லாட்ஜ் அருகில்) சேலம் மெயின்
-                ரோடு
+              960, Main Road, (Opp. Dhana Book Nilayam)
               </Typography>
             );
           case "addressLine2":
             return (
               <Typography className="font-tamil">
-                கொமாரபாளையம் - 638 183,நாமக்கல் Dt
+               BHAVANI - 638 301. Erode Dt
               </Typography>
             );
           case "condition":
@@ -160,7 +158,7 @@ const Books = () => {
               <Typography className="font-tamil">
                 1. நான் மேலே குறிப்பிட்டுள்ள தங்க நகைகளை ஈடாக தருகிறேன். 2. இந்த
                 நகைகள் என்னுடையவை. 3. நான் கடன் தொகை மற்றும் வட்டி சேர்த்து
-                மறுபக்கத்தில் குறிப்பிட்டுள்ள கால அவகாசத்திற்குள் திருப்பி
+                மேலே குறிப்பிட்டுள்ள கால அவகாசத்திற்குள் திருப்பி
                 அடைக்க சம்மதிக்கிறேன். 4. இந்த படிவத்தில் குறிப்பிட்டுள்ள யாவும்
                 உண்மையென நான் உறுதி கூறுகிறேன். 5. பின் பக்கத்தில்
                 கொடுத்திருக்கும் நிபந்தனைகளையும், விதிமுறைகளையும்
@@ -198,9 +196,9 @@ const Books = () => {
             return (
               <Typography className="font-tamil">
                 {" "}
-                4. நான் / நாங்கள் அடமானமாக வைக்க தங்கள் நிறுவனத்திற்கு கொண்டு
-                வந்து இருக்கும் நகைகள் அனைத்தும் என்னுடைய / எங்களுடைய சொந்த
-                நகைகள் என்பதை உறுதியுடன் தெரிவித்துக் கொள்கிறேன் / றோம்.
+                4. தங்களது நகைக்கடன் ரசீது தொலைந்து போனால் நிர்வாகம் கேட்கும்
+                சான்றிதழ்கள் கொடுக்க சம்மதம் தெரிவிக்கிறேன் / றோம்.
+                
               </Typography>
             );
           case "heading5":
@@ -216,8 +214,9 @@ const Books = () => {
             return (
               <Typography className="font-tamil">
                 {" "}
-                6. தங்களது நகைக்கடன் ரசீது தொலைந்து போனால் நிர்வாகம் கேட்கும்
-                சான்றிதழ்கள் கொடுக்க சம்மதம் தெரிவிக்கிறேன் / றோம்.
+                6. நான் / நாங்கள் அடமானமாக வைக்க தங்கள் நிறுவனத்திற்கு கொண்டு
+                வந்து இருக்கும் நகைகள் அனைத்தும் என்னுடைய / எங்களுடைய சொந்த
+                நகைகள் என்பதை உறுதியுடன் தெரிவித்துக் கொள்கிறேன் / றோம்.
               </Typography>
             );
           case "heading7":
@@ -306,7 +305,7 @@ const Books = () => {
           case "schema":
             return <Typography className="font-tamil"> திட்டம்</Typography>;
           case "percent":
-            return <Typography className="font-tamil"> சதவீதம்</Typography>;
+            return <Typography className="font-tamil"> வட்டி விகிதம்</Typography>;
           case "heading0":
             return (
               <Typography className="font-tamil font-bold">
@@ -374,14 +373,14 @@ const Books = () => {
                 <EditIcon style={{ fontSize: 18,color:'brown' ,}} /><span style={{marginTop:'0px'}}>__________________________________________</span>
                 </div></Typography>
               );
-          case "companyName":
-            return "RR GOLD FINANCE";
-          case "cellNumbers":
-            return "Cell No: 9042425142, 9042425642";
-          case "addressLine1":
-            return "135/5 Velavan Complex, Near (MGN) Lodge, Salem Main Road,";
-          case "addressLine2":
-            return "Komarapalayam-638183,Namakkal dist ";
+              case "companyName":
+                return "RR GOLD FINANCE";
+              case "cellNumbers":
+                return "Mob No: 9488279090, 9489719090";
+              case "addressLine1":
+                return "960, Main Road, (Opp. Dhana Book Nilayam)";
+              case "addressLine2":
+                return "BHAVANI - 638 301. Erode Dt";
           case "condition":
             return (
               <Typography className="font_book">
@@ -418,8 +417,8 @@ const Books = () => {
           case "heading4":
             return (
               <Typography className="font_book">
-                4. I / We hereby declare that all the jewelry which I / we are
-                bringing to your company for pawning is my / our own jewelry.
+                4.  In case of loss of the jewelry loan receipt, I agree to
+                provide the certificates requested by the management. 
               </Typography>
             );
           case "heading5":
@@ -433,8 +432,10 @@ const Books = () => {
           case "heading6":
             return (
               <Typography className="font_book">
-                6. In case of loss of the jewelry loan receipt, I agree to
-                provide the certificates requested by the management.
+                6. I / We hereby declare that all the jewelry which I / we are
+                bringing to your company for pawning is my / our own jewelry.
+                
+              
               </Typography>
             );
           case "heading7":
@@ -694,332 +695,6 @@ const Books = () => {
   return (
     <>
       <div className="print-container">
-
-      <div className="print-only">
-          <Grid container spacing={2} justifyContent="center" style={{ padding: '20px' }}>
-
-          <div style={{ pageBreakBefore: 'always' }}> {/* This will force a new page before this content */}
-          <Grid item xs={12} style={{ 
-  textAlign: 'center', 
-  marginTop: '-30px',  // Reduces space above
-  padding: '0 0 10px 0',  // Adds small padding below
-  display: 'flex',     // Makes children align horizontally
-  alignItems: 'center', // Vertically centers items
-  justifyContent: 'center', // Horizontally centers items
-  gap: '20px',          // Adds space between image and text
-  marginBottom: '25px' // Adds space below the heading
-}}>
-  <img 
-  src={image} 
-  alt="Logo" 
-  style={{ 
-    width: '60px',  // Reduced from 100px
-    height: 'auto',
-    margin: '0'
-  }} 
-/>
-  <Typography 
-    variant="h6" 
-    style={{ 
-      fontWeight: 'bold', 
-      color: '#373A8F',
-      margin: '0' // Removes any default margins
-    }}
-  >
-    {getLabels("companyName")}
-  </Typography>
-</Grid>
-
-             {/* Customer Information - Two columns in one row */}
-  <Grid container spacing={2} style={{ marginBottom: '15px'}}>
-    {/* Left Column - First five fields */}
-    <Grid item xs={6}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("customerId")}: </strong>
-            {customerData.customerId}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("loanNumber")}: </strong>
-            {customerData.loanNumber}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("date")}: </strong>
-            {customerData.date}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("customerName")}: </strong>
-            {customerData.customerName}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("fatherName")}: </strong>
-            {customerData.fatherName}
-          </Typography>
-        </Grid>
-      </Grid>
-    </Grid>
-
-    {/* Right Column - Next five fields */}
-    <Grid item xs={6}>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("mobile")}: </strong>
-            {customerData.mobileNumber1}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("loanAmount")}: </strong>
-            {customerData.loanAmount}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("schema")}: </strong>
-            {customerData.schema}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("percent")}: </strong>
-            {customerData.percent}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>
-            <strong>{getLabels("rupeesInWords")}: </strong>
-            {customerData.rupeesInWords}
-          </Typography>
-        </Grid>
-      </Grid>
-    </Grid>
-  </Grid>
-
-  {/* Address - Full width row */}
-  <Grid container>
-    <Grid item xs={12}>
-      <Typography>
-        <strong>{getLabels("address")}: </strong>
-        {customerData.address}
-      </Typography>
-    </Grid>
-  </Grid>
-
-            {/* Jewel Details Table */}
-            <Grid item xs={12} style={{ marginTop: '25px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left' }}>{getLabels("jewelDetails")}</th>
-                    <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left' }}>{getLabels("quantity")}</th>
-                    <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left' }}>{getLabels("weight")}</th>
-                    <th style={{ border: '1px solid black', padding: '8px', textAlign: 'left' }}>{getLabels("lastDateForLoan")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {jewelList.map((jewel, index) => (
-                    <tr key={index}>
-                      <td style={{ border: '1px solid black', padding: '8px' }}>{jewel.jDetails || "N/A"}</td>
-                      <td style={{ border: '1px solid black', padding: '8px' }}>{jewel.quantity || 0}</td>
-                      {index === 0 && (
-                        <>
-                          <td style={{ border: '1px solid black', padding: '8px' }} rowSpan={jewelList.length}>
-                            {customerData.gw || 0}
-                          </td>
-                          <td style={{ border: '1px solid black', padding: '8px' }} rowSpan={jewelList.length}>
-                            {customerData.lastDateForLoan || "N/A"}
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </Grid>
-
-            {/* Photos Section */}
-            <Grid item xs={12} style={{ marginTop: '20px', display: 'flex', marginBottom: '20px'}} className="photo-section">
-              <div style={{ width: '40%', padding: '10px' }}>
-                <Typography><strong>Customer Photo</strong></Typography>
-                {currentCustomer.customerPhoto ? (
-                  <img 
-                    src={currentCustomer.customerPhoto} 
-                    alt="Customer Photo" 
-                    style={{ width: '150px', height: '150px', objectFit: 'contain' }} 
-                  />
-                ) : (
-                  <Typography>No customer photo available</Typography>
-                )}
-              </div>
-              
-              <div style={{ width: '60%', padding: '10px' }}>
-                <Typography><strong>Jewel Photo</strong></Typography>
-                {proof3 && proof3.length > 0 ? (
-                  <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                    {proof3.map((url, idx) => (
-                      <img
-                        key={idx}
-                        src={`${url}`}
-                        alt={`Proof 3 - ${idx}`}
-                        style={{
-                          width: '150px',
-                          height: '150px',
-                          objectFit: 'contain',
-                          marginRight: '10px',
-                          marginBottom: '10px'
-                        }}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <Typography>No jewel photo available</Typography>
-                )}
-              </div>
-            </Grid>
-
-
-{/* Terms and Conditions 1 Section */}
-<Grid item xs={12}>
-  <p className="mb-1" style={{ fontSize: '14px' }}>
-    {getLabels("condition")}
-  </p>
-
-  <Grid container spacing={2} justifyContent="center" style={{ marginTop: '40px' }}>
-    <Grid item xs={12} sm={2}>
-      <p className="mb-0" style={{ marginTop: '16px', fontSize: '14px' }}>
-        {getLabels("heading11")}
-      </p>
-    </Grid>
-    <Grid item xs={12} sm={2}>
-      <p className="mb-0" style={{ marginTop: '16px', fontSize: '14px' }}>
-        {getLabels("heading12")}
-      </p>
-    </Grid>
-    <Grid item xs={12} sm={3}>
-      <p className="mb-0" style={{ marginTop: '16px', fontSize: '14px' }}>
-        {getLabels("heading13")}
-      </p>
-    </Grid>
-    <Grid item xs={12} sm={2}>
-      <p className="mb-0" style={{ marginTop: '16px', fontSize: '14px' }}>
-        {getLabels("heading14")}
-      </p>
-    </Grid>
-    <Grid item xs={12} sm={3}>
-      <p className="mb-0" style={{ marginTop: '16px', fontSize: '14px' }}>
-        {getLabels("heading15")}
-      </p>
-    </Grid>
-  </Grid>
-</Grid>
-
-{/* Footer Note */}
-<Grid item xs={12} style={{ textAlign: 'center', marginTop: '50px' }}>
-  <p className="mb-0" style={{  fontSize: '14px' }}>
-    {getLabels("heading17")}
-  </p>
-</Grid>
-
-</div>
-<div style={{ pageBreakBefore: 'always' }}> {/* This will force a new page before this content */}
-
-            {/* Terms and Conditions 2 */}
-            <Grid item xs={12} style={{ marginTop: '50px' }} className="photo-section">
-              <Typography variant="h6" style={{ textAlign: 'center', marginBottom: '15px' }}>
-                {getLabels("heading0")}
-              </Typography>
-              
-              <Typography>{getLabels("heading1")}</Typography>
-              <Typography>{getLabels("heading2")}</Typography>
-              <Typography>{getLabels("heading3")}</Typography>
-              <Typography>{getLabels("heading4")}</Typography>
-              <Typography>{getLabels("heading5")}</Typography>
-              <Typography>{getLabels("heading6")}</Typography>
-              <Typography>{getLabels("heading7")}</Typography>
-              
-              <div style={{ 
-                marginTop: '15px', 
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'  // Adds space between icon and line
-              }}>
-                <EditIcon style={{ fontSize: 18, color: 'brown' }} />
-                <span>__________________________________________</span>
-              </div>
-              
-              <div style={{ margin: '20px 0' }}>
-  <Typography variant="subtitle1" style={{ 
-    textAlign: 'center', 
-    marginBottom: '8px',
-    fontSize: '1.1rem',
-    color: '#000000'
-  }}>
-    {getLabels("heading8")}
-  </Typography>
-  
-  <Typography variant="subtitle1" style={{ 
-    textAlign: 'center', 
-    marginBottom: '12px',
-    fontSize: '1.1rem',
-    color: '#000000'
-  }}>
-    {getLabels("heading9")}
-  </Typography>
-  
-  <Typography variant="h6" style={{ 
-    textAlign: 'center', 
-    fontWeight: 'bold',
-     color: '#000000',
-    padding: '8px 0',
-    borderTop: '1px solid #eee',
-    borderBottom: '1px solid #eee',
-    margin: '15px auto',
-    maxWidth: '80%'
-  }}>
-    {getLabels("heading10")}
-  </Typography>
-</div>
-            </Grid>
-
-            {/* Signatures */}
-            <Grid item xs={12} style={{ marginTop: '70px', display: 'flex', justifyContent: 'space-between' }}>
-              <div>
-                <Typography>{getLabels("heading11")}</Typography>
-              </div>
-              <div>
-                <Typography>{getLabels("heading12")}</Typography>
-              </div>
-              <div>
-                <Typography>{getLabels("heading14")}</Typography>
-              </div>
-              <div>
-                <Typography>{getLabels("heading16")}</Typography>
-              </div>
-            </Grid>
-
-            {/* <Grid item xs={12} style={{ textAlign: 'center', marginTop: '20px' }}>
-              <Typography>{getLabels("heading17")}</Typography>
-            </Grid> */}
-
-            </div>
-          </Grid>
-          
-        </div>
-
-
-        <div className="screen-only">
         <Grid
           container
           spacing={2}
@@ -1052,23 +727,27 @@ const Books = () => {
             className="paperbg2"
           >
             <Grid container spacing={2} justifyContent="center">
-              <Grid item xs={12} sm={3} align="right" sx={{ mt: 0 }}>
-                <img
-                  src={image}
-                  alt="Logo"
-                  style={{ width: "50%", height: "auto" }}
-                />
+              <Grid item xs={12} sm={3} align="right" sx={{ mt: -2 }}>
+              <img 
+  src={image} 
+  alt="Logo" 
+  style={{ 
+    width: '100px',  // Reduced from 100px
+    height: 'auto',
+    marginTop:'10px'
+  }} 
+/>
               </Grid>
               <Grid item xs={12} sm={9}>
                 <Typography
                   variant="h6"
                   align="center"
                   gutterBottom
-                  sx={{ mt: 0 ,fontWeight:'bold',color:'#373A8F'}}
+                  sx={{ mt: 0 }}
                 >
                   {getLabels("companyName")}
                 </Typography>
-                {/* <Typography
+                <Typography
                   variant="subtitle1"
                   className="voucher_font"
                   align="center"
@@ -1083,7 +762,7 @@ const Books = () => {
                 >
                   {getLabels("addressLine1")}
                   {getLabels("addressLine2")}
-                </Typography> */}
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 <Grid container spacing={2}>
@@ -1155,6 +834,7 @@ const Books = () => {
                   <Grid item xs={12} sm={2}>
                     <TextField
                       label="Date"
+                     
                       name="date"
                       sx={{
                         "& .MuiOutlinedInput-root": {
@@ -1739,7 +1419,6 @@ const Books = () => {
           </Paper>
         </div>
       </div>
-    </div>
     </>
   );
 };

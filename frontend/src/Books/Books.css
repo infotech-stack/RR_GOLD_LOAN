@@ -1,83 +1,38 @@
 .bill-button{
-    text-transform: capitalize !important;
+  text-transform: capitalize !important;
 }
 .filt-button{
-    background-color: rgb(243, 241, 234) !important;
-    text-transform: capitalize !important;
-    width:150px !important;
-    height:40px !important;
+  background-color: rgb(243, 241, 234) !important;
+  text-transform: capitalize !important;
+  width:150px !important;
+  height:40px !important;
 }
 .font-bold{
-    font-weight: 1000 !important;
-    font-size: 17px !important;
+  font-weight: 1000 !important;
+  font-size: 17px !important;
 }
 .voucher_font{
-    font-size: 12px !important;
+  font-size: 12px !important;
 }
 .font_book{
-    font-size: 14px !important;
-    
+  font-size: 14px !important;
+  
 }.font_book1{
-    font-size: 12px !important;
-}
-
-.screen-only {
-    display: block;
-  }
-.print-only {
-  display: none;
+  font-size: 12px !important;
 }
 
 @media print {
-    body {
-      margin: -10px !important; 
-      padding: 0 !important; 
-      position: relative !important;
-   bottom:20px!important;
-    }
+  body {
+    margin: -10px !important; 
+    padding: 0 !important; 
+    position: relative !important;
+ bottom:20px!important;
+  }
+
+
+  .print-container {
+    margin:-10px !important;
+    padding: 0 !important;
   
-    .screen-only {
-        display: none !important;
-      }
-      .print-only {
-        display: block;
-      }
-      
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      
-      .print-container {
-        padding: 10px;
-        font-size: 14px;
-      }
-      
-      /* Ensure tables don't break across pages */
-      table {
-        page-break-inside: auto;
-      }
-      tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
-      
-      /* Adjust image sizes for printing */
-      img {
-        max-width: 100%;
-        height: auto;
-      }
-      .print-only .MuiTypography-root {
-        display: inline !important;
-      }
-
-      /* Override for photo section */
-.print-only .photo-section .MuiTypography-root {
-    display: block !important;
   }
-
-  .print-terms p {
-    font-size: 14px !important;
-    margin-bottom: 4px;
-  }
-  }
+}

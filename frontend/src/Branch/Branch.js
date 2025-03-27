@@ -125,13 +125,13 @@ const Branch = () => {
             >
               RR GOLD FINANCE
             </Typography>
-            {/* <Typography variant="subtitle1">
-              Cell No: 9042425142, 9042425642
+            <Typography variant="subtitle1">
+            Cell No: 9488279090, 9489719090
             </Typography>
-            <Typography variant="body2" sx={{ mb: 3 }}>
-              135/5 Velavan Complex, Near (MGN) Lodge, Salem Main Road,
-              Komarapalayam-638183
-            </Typography> */}
+            <Typography variant="subtitle1" sx={{ mb: 3 }}>
+            960, Main Road, (Opp. Dhana Book Nilayam)
+            BHAVANI - 638 301. Erode Dt
+            </Typography>
           </Grid>
         </Grid>
 
