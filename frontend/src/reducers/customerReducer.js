@@ -8,13 +8,11 @@ const initialState = {
 const customerReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'SET_CUSTOMER_DETAILS':
-      console.log('Reducer received customer details:', action.payload);
       return {
         ...state,
         customerDetails: action.payload,
       };
     case 'SET_PAYMENT_ENTRIES':
-      console.log('Reducer received payment entries:', action.payload);
       return {
         ...state,
         paymentEntries: action.payload,

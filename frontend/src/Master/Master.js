@@ -22,12 +22,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import FormHelperText from "@mui/material/FormHelperText";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import CloseIcon from "@mui/icons-material/Close";
 import "./Master.css";
-import Badge from "react-bootstrap/Badge";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -211,12 +209,12 @@ const Master = ({
   };
 
   const fetchSchemas = () => {
-    console.log("Fetching schemas...");
+
 
     fetch(`${process.env.REACT_APP_BACKEND_URL}/api/schemas`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Data received:", data);
+       
         setSchemas(data);
       })
       .catch((error) => {
@@ -235,46 +233,46 @@ const Master = ({
 
     setFormData((prevState) => {
       const newFormData = { ...prevState, [name]: newValue };
-      const updateLastDateForLoan = () => {
-        const selectedSchema = schemas.find(
-          (schema) => schema.name === newFormData.schema
-        );
+const updateLastDateForLoan = () => {
+  const selectedSchema = schemas.find(
+    (schema) => schema.name === newFormData.schema
+  );
 
-        if (selectedSchema) {
-          const timePeriod = selectedSchema.timePeriod;
-          const enteredDate = new Date(newFormData.date);
+if (selectedSchema) {
+  const timePeriod = selectedSchema.timePeriod; // e.g., "3 Months"
+  const enteredDate = new Date(newFormData.date);
+  let calculatedDate = new Date(enteredDate);
 
-          let calculatedDate = new Date(enteredDate);
+  // Add exact days based on schema
+  let totalDays = 0;
 
-          if (timePeriod.includes("Year")) {
-            const years = parseInt(timePeriod);
-            calculatedDate.setFullYear(calculatedDate.getFullYear() + years);
-          } else if (timePeriod.includes("Months")) {
-            const months = parseInt(timePeriod);
-            calculatedDate.setMonth(calculatedDate.getMonth() + months);
-          }
+  if (timePeriod.includes("Year")) {
+    const years = parseInt(timePeriod); // e.g., 1
+    totalDays = years * 365;
+  } else if (timePeriod.includes("Month")) {
+    const months = parseInt(timePeriod); // e.g., 3 or 6
+    totalDays = months * 30; // Approximate: 30 days per month
+  }
 
-          newFormData.lastDateForLoan = calculatedDate
-            .toISOString()
-            .split("T")[0];
+  // Add days
+  calculatedDate.setDate(calculatedDate.getDate() + totalDays);
+  newFormData.lastDateForLoan = calculatedDate.toISOString().split("T")[0];
 
-          const principal = parseFloat(newFormData.loanAmount);
-          const percentage = parseFloat(selectedSchema.interestPercent);
-          if (!isNaN(principal) && !isNaN(percentage)) {
-            let interest = 0;
-            if (percentage === 12) {
-              interest = principal * 0.12;
-            } else if (percentage === 18) {
-              interest = (principal * 0.18) / 2;
-            } else if (percentage === 24) {
-              interest = (principal * 0.24) / 2;
-            }
-            newFormData.interest = interest.toFixed(0);
-          } else {
-            newFormData.interest = "";
-          }
-        }
-      };
+  // Calculate interest
+  const principal = parseFloat(newFormData.loanAmount);
+  const percentage = parseFloat(selectedSchema.interestPercent.replace('%', ''));
+
+  if (!isNaN(principal) && !isNaN(percentage)) {
+    const interest = (principal * percentage * totalDays) / (365 * 100);
+    newFormData.interest = interest.toFixed(0);
+  } else {
+    newFormData.interest = "";
+  }
+}
+
+};
+
+
       if (name === "schema" || name === "date") {
         updateLastDateForLoan();
       }
@@ -315,7 +313,7 @@ const Master = ({
           ...prevErrors,
           [name]: !pattern.test(value),
         }));
-      } else if (name === "schema" || name === "landmark") {
+      } else if ( name === "landmark") {
         const pattern = /^[a-zA-Z\s]*$/;
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
@@ -356,23 +354,31 @@ const Master = ({
         }
         setValidationErrors(errors);
       }
-      if (name === "loanAmount" || name === "percent") {
-        const principal = parseFloat(newFormData.loanAmount);
-        const percentage = parseFloat(newFormData.percent);
-        if (!isNaN(principal) && !isNaN(percentage)) {
-          let interest = 0;
-          if (percentage === 12) {
-            interest = principal * 0.12;
-          } else if (percentage === 18) {
-            interest = (principal * 0.18) / 2;
-          } else if (percentage === 24) {
-            interest = (principal * 0.24) / 2;
-          }
-          newFormData.interest = interest.toFixed(0);
-        } else {
-          newFormData.interest = "";
-        }
-      }
+if (name === "loanAmount" || name === "percent") {
+  const principal = parseFloat(newFormData.loanAmount);
+  const percentage = parseFloat(newFormData.percent);
+
+  const selectedSchema = schemas.find(
+    (schema) => schema.name === newFormData.schema
+  );
+
+  if (!isNaN(principal) && !isNaN(percentage) && selectedSchema) {
+    const timePeriod = selectedSchema.timePeriod; // e.g., "3 Months", "1 Year"
+    let durationInMonths = 0;
+
+    if (timePeriod.includes("Year")) {
+      durationInMonths = parseInt(timePeriod) * 12;
+    } else if (timePeriod.includes("Month")) {
+      durationInMonths = parseInt(timePeriod);
+    }
+
+    const interest = (principal * percentage * durationInMonths) / (12 * 100);
+    newFormData.interest = interest.toFixed(0);
+  } else {
+    newFormData.interest = "";
+  }
+}
+
 
       if (name === "jewelWeight" || name === "jewelList") {
         newFormData.gw = calculateTotalWeight(); // Recalculate total weight
@@ -427,7 +433,7 @@ const Master = ({
       ) {
         errors[key] = "Enter a valid 10-digit mobile number";
       } else if (
-        (key === "schema" || key === "landmark") &&
+        (key === "landmark") &&
         !/^[a-zA-Z\s]*$/.test(formData[key])
       ) {
         errors[key] = `Enter a valid ${key
@@ -1104,13 +1110,20 @@ const Master = ({
               onChange={handleSelectChange}
             >
               <option value="">Select Jewel</option>
-              <option value="chain">Chain</option>
-              <option value="bracelet">Bracelet</option>
-              <option value="earnings">Earrings</option>
-              <option value="bangle">Bangle</option>
-              <option value="ring">Ring</option>
-              <option value="anklet">Anklet</option>
-              <option value="coin">Coin</option>
+              <option value="chain">CHAIN</option>
+              <option value="bracelet">BRACELET</option>
+              <option value="bangle">BANGLE</option>
+              <option value="stud_jimmiki">STUD JIMMIKI</option>
+              <option value="stud_thongal">STUD THONGAL</option>
+              <option value="stud_drops">STUD DROPS</option>
+              <option value="ring">RING</option>
+              <option value="anklet">ANKLET</option>
+              <option value="coin">COIN</option>
+              <option value="dollar">DOLLAR</option>
+              <option value="stone_stud">STONE STUD</option>
+              <option value="mattal">MATTAL</option>
+              <option value="mugaphu_chain">MUGAPHU CHAIN</option>
+              <option value="silver">SILVER</option>
               <option value="others">Others</option>
               {formData.jDetails === customJewelDetail && (
                 <option value={customJewelDetail}>{customJewelDetail}</option>

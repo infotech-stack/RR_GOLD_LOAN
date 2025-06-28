@@ -296,6 +296,10 @@ router.get("/merged-loan-data", async (req, res) => {
               updatedSchema = "HGL"; // No further upgrade, but percent increases to 30%
               updatedPercent = 30;
               break;
+            case "HGL-SPCL":
+              updatedSchema = "HGL-SPCL"; // No further upgrade, but percent increases to 30%
+              updatedPercent = 30;
+              break;
             default:
               // If schema is not recognized, keep the current values
               updatedSchema = ledger.schema;

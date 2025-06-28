@@ -56,11 +56,18 @@ const CustomerDialog = ({
   const [jewelOptions, setJewelOptions] = useState([
     "chain",
     "bracelet",
-    "earnings",
     "bangle",
+    "stud jimmiki",
+    "stud thongal",
+    "stud drops",
     "ring",
-    "anklet",
     "coin",
+    "dollar",
+    "anklet",
+    "stone stud",
+    "mattal",
+    "mugaphu chain",
+    "silver",
     "others",
   ]);
   const [qualityOptions, setQualityOptions] = useState([
@@ -107,20 +114,11 @@ const CustomerDialog = ({
   const [editableEntry, setEditableEntry] = useState(entry);
   useEffect(() => {
     if (entry && entry.loanNumber) {
-      console.log(
-        "Fetching payment entries for loan number:",
-        entry.loanNumber
-      );
-      console.log(
-        "Fetching payment entries for interest amount:",
-        entry.interestamount
-      );
       dispatch(fetchPaymentEntries(entry.loanNumber));
     }
   }, [dispatch, entry]);
 
   useEffect(() => {
-    console.log("Payment entries in CustomerDialog:", paymentEntries);
   }, [paymentEntries]);
   useEffect(() => {
     if (
@@ -336,60 +334,56 @@ const CustomerDialog = ({
         let updatedEntry = { ...prevEntry, [name]: value };
 
         if (name === "date") {
-          const loanDate = convertDateFormat(value); // Make sure to use convertDateFormat
+          const loanDate = convertDateFormat(value); // Convert string to Date
           console.log("Parsed loanDate:", loanDate);
 
-          if (loanDate) {
+       if (loanDate) {
             let newLastDateForLoan;
+            let daysToAdd = 0;
 
             if (updatedEntry.schema === "LGL") {
-              newLastDateForLoan = formatDateForInput(
-                new Date(
-                  loanDate.getFullYear() + 1,
-                  loanDate.getMonth(),
-                  loanDate.getDate()
-                )
-              );
-            } else if (
-              updatedEntry.schema === "MGL" ||
-              updatedEntry.schema === "HGL"
-            ) {
-              newLastDateForLoan = formatDateForInput(
-                new Date(
-                  loanDate.getFullYear(),
-                  loanDate.getMonth() + 6,
-                  loanDate.getDate()
-                )
-              );
+              daysToAdd = 365;
+            } else if (updatedEntry.schema === "MGL" || updatedEntry.schema === "HGL") {
+              daysToAdd = 180;
+            } else if (updatedEntry.schema === "HGL-SPCL") {
+              daysToAdd = 90;
             }
+
+            const calculatedDate = new Date(loanDate);
+            calculatedDate.setDate(calculatedDate.getDate() + daysToAdd);
+
+            newLastDateForLoan = formatDateForInput(calculatedDate);
 
             console.log(
               `Calculated newLastDateForLoan for schema ${updatedEntry.schema}:`,
               newLastDateForLoan
             );
-            updatedEntry.lastDateForLoan = newLastDateForLoan; // Set the new last date for loan
-          } else {
+            updatedEntry.lastDateForLoan = newLastDateForLoan;
+          }
+          else {
             console.error(
               "Invalid loanDate parsed, lastDateForLoan won't be updated."
             );
           }
         }
 
-        // Remaining logic for updating other fields
+
+        // Interest calculation
         if (name === "loanAmount") {
           let interest = 0;
 
           if (updatedEntry.schema === "LGL") {
-            interest = calculateInterest(value, 12, 12);
+            interest = calculateInterest(value, 12, 12); // 12% for 12 months
           } else if (updatedEntry.schema === "MGL") {
-            interest = calculateInterest(value, 18, 6);
+            interest = calculateInterest(value, 18, 6);  // 18% for 6 months
           } else if (updatedEntry.schema === "HGL") {
-            interest = calculateInterest(value, 24, 6);
+            interest = calculateInterest(value, 24, 6);  // 24% for 6 months
+          } else if (updatedEntry.schema === "HGL-SPCL") {
+            interest = calculateInterest(value, 24, 3);  // 24% for 3 months
           }
 
           updatedEntry.interest = interest;
         }
-
         if (name === 'iw' || name === 'gw') {
           updatedEntry[name] = parseFloat(value);
   
@@ -410,62 +404,65 @@ const CustomerDialog = ({
     }
   };
 
-  const handleSchemaChange = (e) => {
-    const selectedSchema = e.target.value;
-    let percent = "";
-    let lastDateForLoan = "";
-    let interest = 0;
+const handleSchemaChange = (e) => {
+  const selectedSchema = e.target.value;
+  let percent = "";
+  let lastDateForLoan = "";
+  let interest = 0;
 
-    const loanDate = new Date(editableEntry.date);
+  const loanDate = new Date(editableEntry.date);
+  let daysToAdd = 0;
+  let interestPercent = 0;
+  let interestMonths = 0;
 
-    switch (selectedSchema) {
-      case "LGL":
-        percent = "12%";
-        lastDateForLoan = formatDateForInput(
-          new Date(
-            loanDate.getFullYear() + 1,
-            loanDate.getMonth(),
-            loanDate.getDate()
-          )
-        );
-        interest = calculateInterest(editableEntry.loanAmount, 12, 12);
-        break;
-      case "MGL":
-        percent = "18%";
-        lastDateForLoan = formatDateForInput(
-          new Date(
-            loanDate.getFullYear(),
-            loanDate.getMonth() + 6,
-            loanDate.getDate()
-          )
-        );
-        interest = calculateInterest(editableEntry.loanAmount, 18, 6);
-        break;
-      case "HGL":
-        percent = "24%";
-        lastDateForLoan = formatDateForInput(
-          new Date(
-            loanDate.getFullYear(),
-            loanDate.getMonth() + 3,
-            loanDate.getDate()
-          )
-        );
-        interest = calculateInterest(editableEntry.loanAmount, 24, 3);
-        break;
-      default:
-        percent = "";
-        lastDateForLoan = "";
-        interest = 0;
-    }
+  switch (selectedSchema) {
+    case "LGL":
+      percent = "12%";
+      interestPercent = 12;
+      interestMonths = 12;
+      daysToAdd = 365;
+      break;
+    case "MGL":
+      percent = "18%";
+      interestPercent = 18;
+      interestMonths = 6;
+      daysToAdd = 180;
+      break;
+    case "HGL":
+      percent = "24%";
+      interestPercent = 24;
+      interestMonths = 6;
+      daysToAdd = 180;
+      break;
+    case "HGL-SPCL":
+      percent = "24%";
+      interestPercent = 24;
+      interestMonths = 3;
+      daysToAdd = 90;
+      break;
+    default:
+      break;
+  }
 
-    setEditableEntry((prevEntry) => ({
-      ...prevEntry,
-      schema: selectedSchema,
-      percent: percent,
-      lastDateForLoan: lastDateForLoan,
-      interest: interest,
-    }));
-  };
+  // Calculate exact lastDateForLoan
+  const calculatedDate = new Date(loanDate);
+  calculatedDate.setDate(calculatedDate.getDate() + daysToAdd);
+  lastDateForLoan = formatDateForInput(calculatedDate);
+
+  // Calculate interest using your helper
+  interest = calculateInterest(editableEntry.loanAmount, interestPercent, interestMonths);
+
+  // Update entry
+  setEditableEntry((prevEntry) => ({
+    ...prevEntry,
+    schema: selectedSchema,
+    percent: percent,
+    lastDateForLoan: lastDateForLoan,
+    interest: interest,
+  }));
+};
+
+
   const addJewelDetails = () => {
     const newJewel = {
       jDetails: "", 
@@ -538,7 +535,7 @@ const CustomerDialog = ({
         const response = await axios.get(
           `${process.env.REACT_APP_BACKEND_URL}/api/ledger/merged-loan-data`
         );
-        console.log("API Response:", response.data); // Debugging
+
 
         const filteredLoan = response.data.find(
           (loan) => loan.loanNumber === loanNumber
@@ -647,7 +644,7 @@ const CustomerDialog = ({
                 <label className="customLabel">Original Loan Amount :</label>
                 <input
                   type="text"
-                  value={editableEntry.loanAmount}
+                  value={editableEntry.loanAmount }
                   name="loanAmount"
                   onChange={handleChange}
                   className=" gridItemInput "
@@ -837,6 +834,7 @@ const CustomerDialog = ({
                       <option value="LGL">LGL</option>
                       <option value="MGL">MGL</option>
                       <option value="HGL">HGL</option>
+                      <option value="HGL-SPCL">HGL-SPCL</option>
                     </select>
                   </div>
                   <div className="col-12 col-md-2">
@@ -864,22 +862,22 @@ const CustomerDialog = ({
                     />
                   </div>
                   <div className="col-12 col-md-3">
-  <label className="form-label">Balance Principal : </label>
-  <input
-    type="text"
-    value={
-      loanData?.loanamountbalance ?? // Check the single loan object
-      (editableEntry.loanamountbalance !== null && editableEntry.loanamountbalance !== ""
-        ? editableEntry.loanamountbalance
-        : editableEntry.loanAmount)
-    }
-    name="loanamountbalance"
-    className="form-control"
-    onChange={handleChange}
-    readOnly={!isEditing}
-  />
-</div>
-                  <div className="col-12 col-md-2">
+            <label className="form-label">Balance Principal : </label>
+            <input
+              type="text"
+              value={
+                loanData?.loanamountbalance ?? // Check the single loan object
+                (editableEntry.loanamountbalance !== null && editableEntry.loanamountbalance !== ""
+                  ? editableEntry.loanamountbalance
+                  : editableEntry.loanAmount)
+              }
+              name="loanamountbalance"
+              className="form-control"
+              onChange={handleChange}
+              readOnly={!isEditing}
+            />
+          </div>
+                            <div className="col-12 col-md-2">
                     <label className="form-label">Interest Amount:</label>
                     <input
                       type="text"

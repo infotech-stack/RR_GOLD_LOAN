@@ -131,7 +131,7 @@ const Accounts = () => {
         align="center"
         sx={{ mb: 2, color: "#373A8F", fontWeight: "550" }}
       >
-       <FontAwesomeIcon icon={faCreditCard  } size="1.2x" style={{ color: "#373A8F" }} /> DAY TO DAY EXPENSES
+       <FontAwesomeIcon icon={faCreditCard  } size="sm" style={{ color: "#373A8F" }} /> DAY TO DAY EXPENSES
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>

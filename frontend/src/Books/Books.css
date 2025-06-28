@@ -11,6 +11,9 @@
   font-weight: 1000 !important;
   font-size: 17px !important;
 }
+.bill_bookbg{
+  background-color: rgb(241, 205, 233) !important;
+}
 .voucher_font{
   font-size: 12px !important;
 }

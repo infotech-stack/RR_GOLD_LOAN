@@ -30,11 +30,11 @@ const GoldLoanSchema = () => {
   const validate = () => {
     const newErrors = {};
     
-    // Schema Name validation
-    if (!newSchema.name || !/^[a-zA-Z\s]*$/.test(newSchema.name)) {
-      newErrors.name = 'Schema Name is required and must contain only letters and spaces';
+      // Schema Name validation
+    if (!newSchema.name || !/^[a-zA-Z\s()]*$/.test(newSchema.name)) {
+      newErrors.name = 'Schema Name is required and can only contain letters, spaces, and parentheses';
     }
-    
+
     // Interest Percent validation
     if (!newSchema.interestPercent || isNaN(newSchema.interestPercent)) {
       newErrors.interestPercent = 'Interest Percent is required and must be a number';

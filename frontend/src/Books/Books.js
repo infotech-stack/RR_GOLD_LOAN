@@ -724,7 +724,7 @@ const Books = () => {
             elevation={2}
             style={{ padding: "20px" }}
             sx={{ maxWidth: 750, margin: "auto" }}
-            className="paperbg2"
+            className="bill_bookbg"
           >
             <Grid container spacing={2} justifyContent="center">
               <Grid item xs={12} sm={3} align="right" sx={{ mt: -2 }}>
@@ -1305,7 +1305,7 @@ const Books = () => {
             elevation={2}
             style={{ padding: "20px" }}
             sx={{ maxWidth: 750, margin: "auto" }}
-            className="paperbg2"
+            className="bill_bookbg"
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sx={{ mt: 0 }}>

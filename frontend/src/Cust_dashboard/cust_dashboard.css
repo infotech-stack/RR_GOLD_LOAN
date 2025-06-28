@@ -196,11 +196,11 @@
     text-transform: uppercase;
   }
   
-  .loan-status.active {
+  .loan-status.Active {
     background: var(--success-color);
   }
   
-  .loan-status.overdue {
+  .loan-status.Closed {
     background: var(--danger-color);
   }
   

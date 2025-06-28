@@ -222,7 +222,6 @@ useEffect(() => {
   const fetchLoanData = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/ledger/merged-loan-data`);
-      console.log("API Response:", response.data); // Debugging
       setLoanData(response.data);
     } catch (err) {
       console.error("API Error:", err.message);
@@ -333,10 +332,9 @@ const fetchLedgers = async () => {
 };
 
 useEffect(() => {
-  if (loanData) {
-    fetchLedgers();
-  }
-}, [loanData]); // Re-fetch ledgers when loanData changes
+  fetchLedgers(); // Only call once when component mounts
+}, []);
+
 
 
   const handleAddLoanClick = (customerId) => {

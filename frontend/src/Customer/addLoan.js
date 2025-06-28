@@ -194,12 +194,12 @@ const Addloan = ({
   
 
   const fetchSchemas = () => {
-    console.log("Fetching schemas...");
+
 
     fetch(`${process.env.REACT_APP_BACKEND_URL}/api/schemas`)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Data received:", data);
+        
         setSchemas(data); // Store the full schema objects
       })
       .catch((error) => {
@@ -236,21 +236,28 @@ const Addloan = ({
           // Recalculate the last date for the loan
           const enteredDate = new Date(newFormData.date);
           let calculatedDate = new Date(enteredDate);
-  
-          // Calculate lastDateForLoan based on schema name
-          switch (selectedSchema.name.toLowerCase()) {
-            case "lgl":
-              calculatedDate.setFullYear(calculatedDate.getFullYear() + 1); // 1 year
-              break;
-            case "mgl":
-              calculatedDate.setMonth(calculatedDate.getMonth() + 6); // 6 months
-              break;
-            case "hgl":
-              calculatedDate.setMonth(calculatedDate.getMonth() + 3); // 3 months
-              break;
-            default:
-              break;
-          }
+  // Calculate lastDateForLoan based on schema name
+let daysToAdd = 0;
+
+switch (selectedSchema.name.toLowerCase()) {
+  case "lgl":
+    daysToAdd = 365; // 1 year
+    break;
+  case "mgl":
+  case "hgl":
+    daysToAdd = 180; // 6 months
+    break;
+  case "hgl spcl":
+    daysToAdd = 90; // 3 months
+    break;
+  default:
+    daysToAdd = 0;
+    break;
+}
+
+calculatedDate.setDate(calculatedDate.getDate() + daysToAdd);
+
+
   
           newFormData.lastDateForLoan = calculatedDate
             .toISOString()
@@ -266,26 +273,32 @@ const Addloan = ({
         if (selectedSchema) {
           const enteredDate = new Date(newValue);
           let calculatedDate = new Date(enteredDate);
-  
-          // Calculate lastDateForLoan based on schema name
+          let daysToAdd = 0;
+
+          // Calculate exact day-based durations
           switch (selectedSchema.name.toLowerCase()) {
             case "lgl":
-              calculatedDate.setFullYear(calculatedDate.getFullYear() + 1); // 1 year
+              daysToAdd = 365; // 1 year
               break;
             case "mgl":
-              calculatedDate.setMonth(calculatedDate.getMonth() + 6); // 6 months
+              daysToAdd = 180; // 6 months
               break;
             case "hgl":
-              calculatedDate.setMonth(calculatedDate.getMonth() + 3); // 3 months
+              daysToAdd = 180; // 6 months
+              break;
+            case "hgl spcl":
+              daysToAdd = 90; // 3 months
               break;
             default:
+              daysToAdd = 0;
               break;
           }
-  
-          newFormData.lastDateForLoan = calculatedDate
-            .toISOString()
-            .split("T")[0];
+
+          calculatedDate.setDate(calculatedDate.getDate() + daysToAdd);
+
+          newFormData.lastDateForLoan = calculatedDate.toISOString().split("T")[0];
         }
+
       }
   
       // Handle customerId generation
@@ -315,7 +328,7 @@ const Addloan = ({
           ...prevErrors,
           [name]: !pattern.test(value),
         }));
-      } else if (name === "schema" || name === "landmark") {
+      } else if (name === "landmark") {
         const pattern = /^[a-zA-Z\s]*$/;
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
@@ -367,24 +380,32 @@ const Addloan = ({
         }
         setValidationErrors(errors);
       }
-  
       if (name === "loanAmount" || name === "percent") {
         const principal = parseFloat(newFormData.loanAmount);
         const percentage = parseFloat(newFormData.percent);
-        if (!isNaN(principal) && !isNaN(percentage)) {
-          let interest = 0;
-          if (percentage === 12) {
-            interest = principal * 0.12;
-          } else if (percentage === 18) {
-            interest = (principal * 0.18) / 2;
-          } else if (percentage === 24) {
-            interest = (principal * 0.24) / 2;
+
+        const selectedSchema = schemas.find(
+          (schema) => schema.name === newFormData.schema
+        );
+
+        if (!isNaN(principal) && !isNaN(percentage) && selectedSchema) {
+          const timePeriod = selectedSchema.timePeriod; // e.g., "3 Months", "1 Year"
+          let durationInMonths = 0;
+
+          if (timePeriod.includes("Year")) {
+            durationInMonths = parseInt(timePeriod) * 12;
+          } else if (timePeriod.includes("Month")) {
+            durationInMonths = parseInt(timePeriod);
           }
+
+          const interest = (principal * percentage * durationInMonths) / (12 * 100);
           newFormData.interest = interest.toFixed(0);
         } else {
           newFormData.interest = "";
         }
       }
+
+
       if (name === "jewelWeight" || name === "jewelList") {
         newFormData.gw = calculateTotalWeight();
       }
@@ -409,7 +430,7 @@ const Addloan = ({
       } else if (key === "mobileNumber1" && !/^\d{10}$/.test(formData[key])) {
         errors[key] = "Enter a valid 10-digit mobile number";
       } else if (
-        (key === "schema" || key === "landmark") &&
+        ( key === "landmark") &&
         !/^[a-zA-Z\s]*$/.test(formData[key])
       ) {
         errors[key] = `Enter a valid ${key
@@ -1039,15 +1060,22 @@ const Addloan = ({
     value={formData.jDetails}
     onChange={handleSelectChange}
   >
-    <option value="">Select Jewel Type</option>
-    <option value="chain">Chain</option>
-    <option value="bracelet">Bracelet</option>
-    <option value="earnings">Earrings</option>
-    <option value="bangle">Bangle</option>
-    <option value="ring">Ring</option>
-    <option value="anklet">Anklet</option>
-    <option value="coin">Coin</option>
-    <option value="others">Others</option>
+              <option value="">Select Jewel</option>
+              <option value="chain">CHAIN</option>
+              <option value="bracelet">BRACELET</option>
+              <option value="bangle">BANGLE</option>
+              <option value="stud_jimmiki">STUD JIMMIKI</option>
+              <option value="stud_thongal">STUD THONGAL</option>
+              <option value="stud_drops">STUD DROPS</option>
+              <option value="ring">RING</option>
+              <option value="anklet">ANKLET</option>
+              <option value="coin">COIN</option>
+              <option value="dollar">DOLLAR</option>
+              <option value="stone_stud">STONE STUD</option>
+              <option value="mattal">MATTAL</option>
+              <option value="mugaphu_chain">MUGAPHU CHAIN</option>
+              <option value="silver">SILVER</option>
+              <option value="others">Others</option>
     {formData.jDetails === customJewelDetail && (
       <option value={customJewelDetail}>{customJewelDetail}</option>
     )}

@@ -186,36 +186,6 @@ router.get('/check/:loanNo', async (req, res) => {
 
 
 
-// // Example update function
-// router.put("/updateLoan/:loanNo", async (req, res) => {
-//   const { loanNo } = req.params;
-//   const { lastDateForLoan, schema, percent, loanamountbalance, interestbalamount } = req.body;
-
-//   try {
-//     const updatedLoanEntry = await LoanEntry.findOneAndUpdate(
-//       { loanNo },
-//       { 
-//         lastDateForLoan, 
-//         schema, 
-//         percent,
-//         loanamountbalance, // Update loan amount balance
-//         interestbalamount // Update interest balance amount
-//       },
-//       { new: true }
-//     );
-
-//     if (updatedLoanEntry) {
-//       res.status(200).json(updatedLoanEntry);
-//     } else {
-//       res.status(404).json({ message: "Loan entry not found for this loan number" });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-
-
 // Route to delete a loan entry by ID
 router.delete('/delete/:id', async (req, res) => {
   try {
@@ -232,28 +202,7 @@ router.delete('/delete/:id', async (req, res) => {
     res.status(500).json({ message: 'Failed to delete loan entry', error });
   }
 });
-// router.put("/updateLoan/:loanNo", async (req, res) => {
-//   console.log("PUT request received for loanNumber:", req.params.loanNo);
-//   console.log("Request body:", req.body);
-//   const { loanNo } = req.params;
-//   const { lastDateForLoan, schema, percent } = req.body;
 
-//   try {
-//     const updatedLedger = await Ledger.findOneAndUpdate(
-//       { loanNo },
-//       { lastDateForLoan, schema, percent },
-//       { new: true }
-//     );
-
-//     if (updatedLedger) {
-//       res.status(200).json(updatedLedger);
-//     } else {
-//       res.status(404).json({ message: "Ledger entry not found for this loan number" });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
 
 
 module.exports = router;

@@ -21,7 +21,7 @@ import {
   Checkbox,
   Button,
 } from "@mui/material";
-import "../User/User.css"; 
+import "./User.css"; 
 import axios from "axios";
 import Swal from "sweetalert2";
 const translations = {

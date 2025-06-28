@@ -187,8 +187,8 @@ function CustomerDashboard() {
           <div className="loan-card" key={index}>
             <div className="loan-card-header">
               <h3 className="loan-title">Loan No - {customer.loanNumber}</h3>
-              <span className={`loan-status ${new Date(customer.lastDateForLoan) < new Date() ? 'overdue' : 'active'}`}>
-                {new Date(customer.lastDateForLoan) < new Date() ? 'Closed' : 'Active'}
+              <span className={`loan-status ${customer.loanamountbalance === '0' || customer.loanamountbalance === 0 ? 'Closed' : 'Active'}`}>
+                {customer.loanamountbalance === '0' || customer.loanamountbalance === 0 ? 'Closed' : 'Active'}
               </span>
             </div>
             

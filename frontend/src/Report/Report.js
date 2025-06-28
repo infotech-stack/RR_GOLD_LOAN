@@ -747,7 +747,6 @@ const Report = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/loanEntry/byLoanNo/${loanNo}`
       );
-      console.log("API Response:", response.data);
       setShowSaveButton(false);
       setShowOtherButtons(true);
       if (Array.isArray(response.data) && response.data.length > 0) {

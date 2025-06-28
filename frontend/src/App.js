@@ -16,20 +16,14 @@ import Tools from "./Tools/Tools";
 import { AuthProvider } from "./AuthContext";
 import AddAdminPage from "./Newrootadmin/Newrootadmin";
 import GoldLoanSchema from "./Master/Goldloanschema";
-import GoldLoanAmount from "./Master/GoldloanAmount";
-import GoldLoanCategory from "./Master/Goldcategory";
-import User from "./User/User";
 import Branch from "./Branch/Branch";
 import Voucher from "./Voucher/Voucher";
-import Employee from "./Employee/Employee";
 import Report from "./Report/Report";
-import LoanRetrieved from "./Loan Retrieved/LoanRetrived";
 import Salary from "./Expenses/Salary";
 import { BalanceProvider } from "../src/Reminders/BalanceContext";
 import ProtectedRoute from "./ProtectedRoute";
 import CustomerDashboard from "./Cust_dashboard/cust_dashboard";
 import { LedgerProvider } from './LedgerContext';
-import Editmaster from "./Customer/editmaster";
 function App() {
   const [permissions, setPermissions] = useState([]);
 
@@ -46,19 +40,13 @@ function App() {
             <Route element={<Layout permissions={permissions} />}>
               <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
               <Route path="/master" element={<ProtectedRoute element={Master} />} />
-              <Route path="/edit_master" element={<ProtectedRoute element={Editmaster} />} />
               <Route path="/master/loan" element={<ProtectedRoute element={GoldLoanSchema} />} />
-              <Route path="/master/amount" element={<ProtectedRoute element={GoldLoanAmount} />} />
-              <Route path="/master/category" element={<ProtectedRoute element={GoldLoanCategory} />} />
               <Route path="/added_admin" element={<ProtectedRoute element={AddedAdm} />} />
               <Route path="/customer" element={<ProtectedRoute element={Customer} />} />
-              <Route path="/root_man" element={<ProtectedRoute element={User} />} />
               <Route path="/branch" element={<ProtectedRoute element={Branch} />} />
               <Route path="/voucher" element={<ProtectedRoute element={Voucher} />} />
-              <Route path="/admin_man" element={<ProtectedRoute element={Employee} />} />
               <Route path="/report" element={<ProtectedRoute element={Report} />} />
               <Route path="/repledge" element={<ProtectedRoute element={Repledge} />} />
-              <Route path="/loan_retrieved" element={<ProtectedRoute element={LoanRetrieved} />} />
               <Route path="/expenses" element={<ProtectedRoute element={Accounts} />} />
               <Route path="/expenses/salary-payment" element={<ProtectedRoute element={Salary} />} />
               <Route path="/reminders" element={<ProtectedRoute element={Reminders} />} />

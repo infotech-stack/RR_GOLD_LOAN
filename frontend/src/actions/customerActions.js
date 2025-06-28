@@ -18,7 +18,6 @@ export const fetchCustomerDetails = (customerId) => async (dispatch) => {
 export const fetchPaymentEntries = (loanNumber) => async (dispatch) => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/loanEntry/byLoanNo/${loanNumber}`);
-    console.log("Fetched Entries by Loan Number:", response.data);
     dispatch({ type: 'SET_PAYMENT_ENTRIES', payload: response.data });
     return response.data; // Return the data here
   } catch (error) {
