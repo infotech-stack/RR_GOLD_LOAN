@@ -98,42 +98,42 @@ const Customer = ({ entry }) => {
     Closed: 0,
   });
   const isOverdue = (dateString) => new Date(dateString) < new Date();
-  const filteredEntries = Object.keys(groupedEntries).reduce(
-    (acc, customerId) => {
-      const customerEntries = groupedEntries[customerId];
+const filteredEntries = Object.keys(groupedEntries).reduce(
+  (acc, customerId) => {
+    const customerEntries = groupedEntries[customerId];
+    const lowerSearchTerm = searchTerm.toLowerCase().trim();
 
-      const isMatch = customerEntries.filter((entry) => {
-        const matchesSearchTerm =
-          entry.customerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.loanNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.mobileNumber1
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          entry.lastDateForLoan
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          entry.date.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.schema.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          entry.loanAmount.toString().includes(searchTerm.toLowerCase());
+    const isMatch = customerEntries.filter((entry) => {
+      // Handle schema search separately to avoid partial matches
+      const schemaMatch = lowerSearchTerm === "hgl" 
+        ? entry.schema.toLowerCase() === "hgl"
+        : entry.schema.toLowerCase().includes(lowerSearchTerm);
 
-        const matchesStatus = entry.status
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+      const matchesSearchTerm =
+        entry.customerId.toLowerCase().includes(lowerSearchTerm) ||
+        entry.loanNumber.toLowerCase().includes(lowerSearchTerm) ||
+        entry.customerName.toLowerCase().includes(lowerSearchTerm) ||
+        (entry.mobileNumber1 && entry.mobileNumber1.toLowerCase().includes(lowerSearchTerm)) ||
+        (entry.lastDateForLoan && entry.lastDateForLoan.toLowerCase().includes(lowerSearchTerm)) ||
+        (entry.date && entry.date.toLowerCase().includes(lowerSearchTerm)) ||
+        schemaMatch ||
+        entry.loanAmount.toString().includes(lowerSearchTerm);
 
-        return matchesSearchTerm || matchesStatus;
-      });
+      const matchesStatus = entry.status &&
+        entry.status.toLowerCase().includes(lowerSearchTerm);
 
-      if (isMatch.length > 0) {
-        acc[customerId] = isMatch;
-      }
+      return matchesSearchTerm || matchesStatus;
+    });
 
-      return acc;
-    },
-    {}
-  );
+    if (isMatch.length > 0) {
+      acc[customerId] = isMatch;
+    }
 
-  useEffect(() => {
+    return acc;
+  },
+  {}
+);
+useEffect(() => {
     const totalFilteredEntries = Object.values(filteredEntries).flat();
 
     // Initialize counts for filtered totals
@@ -142,79 +142,97 @@ const Customer = ({ entry }) => {
     let lglCount = 0;
     let mglCount = 0;
     let hglCount = 0;
+    let hglspclCount = 0;
 
     // Calculate live and closed accounts based on the filtered entries
     totalFilteredEntries.forEach((entry) => {
-        // Increment counts based on status and schema
-        if (entry.status.toLowerCase() === "closed") {
-            closedAccountsCount++;
-            if (entry.schema) {
-                if (entry.schema.toUpperCase() === "LGL") lglCount++;
-                if (entry.schema.toUpperCase() === "MGL") mglCount++;
-                if (entry.schema.toUpperCase() === "HGL") hglCount++;
-            }
-        } else if (entry.status.toLowerCase() === "live") {
-            liveAccountsCount++;
-            if (entry.schema) {
-                if (entry.schema.toUpperCase() === "LGL") lglCount++;
-                if (entry.schema.toUpperCase() === "MGL") mglCount++;
-                if (entry.schema.toUpperCase() === "HGL") hglCount++;
-            }
+        if (!entry.status || !entry.schema) return;
+
+        const status = entry.status.toLowerCase();
+        const schema = entry.schema.toUpperCase();
+
+        // Increment status counts
+        if (status === "closed") closedAccountsCount++;
+        if (status === "live") liveAccountsCount++;
+
+        // Increment schema counts
+        switch (schema) {
+            case "LGL":
+                lglCount++;
+                break;
+            case "MGL":
+                mglCount++;
+                break;
+            case "HGL":
+                hglCount++;
+                break;
+            case "HGL-SPCL":
+                hglspclCount++;
+                break;
+            default:
+                break;
         }
     });
 
-    // Logic for modifying totals based on search term
+    // Initialize totals with all counts
     let totals = {
         LGL: lglCount,
         MGL: mglCount,
         HGL: hglCount,
+        HGLSPCL: hglspclCount,
         Live: liveAccountsCount,
         Closed: closedAccountsCount,
     };
 
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    if (lowerSearchTerm === "lgl" || lowerSearchTerm === "mgl" || lowerSearchTerm === "hgl") {
-        // If searching for a specific schema, set the counts for all to be the same
-        const specificCount = totals[lowerSearchTerm.toUpperCase()] || 0;
+    const lowerSearchTerm = searchTerm.toLowerCase().trim();
+    
+    // Handle search term filters
+    if (lowerSearchTerm === "lgl") {
         totals = {
-            LGL: specificCount,
-            MGL: specificCount,
-            HGL: specificCount,
-            Live: liveAccountsCount,
-            Closed: closedAccountsCount,
+            ...totals,
+            MGL: 0,
+            HGL: 0,
+            HGLSPCL: 0
+        };
+    } else if (lowerSearchTerm === "mgl") {
+        totals = {
+            ...totals,
+            LGL: 0,
+            HGL: 0,
+            HGLSPCL: 0
+        };
+    } else if (lowerSearchTerm === "hgl") {
+        totals = {
+            ...totals,
+            LGL: 0,
+            MGL: 0,
+            HGLSPCL: 0
+        };
+    } else if (lowerSearchTerm === "hgl-spcl") {
+        totals = {
+            ...totals,
+            LGL: 0,
+            MGL: 0,
+            HGL: 0
         };
     } else if (lowerSearchTerm === "live") {
-        // If searching for "live", set only the Live total
         totals = {
-            LGL: lglCount,
-            MGL: mglCount,
-            HGL: hglCount,
-            Live: liveAccountsCount,
-            Closed: 0,  // Set Closed to 0 as only Live is searched
+            ...totals,
+            Closed: 0
         };
     } else if (lowerSearchTerm === "closed") {
-        // If searching for "closed", set only the Closed total
         totals = {
-            LGL: lglCount,
-            MGL: mglCount,
-            HGL: hglCount,
-            Live: 0,  // Set Live to 0 as only Closed is searched
-            Closed: closedAccountsCount,
+            ...totals,
+            Live: 0
         };
     }
 
     // Only set totals if there is a change
     setTotals((prevTotals) => {
-        if (
-            prevTotals.LGL !== totals.LGL ||
-            prevTotals.MGL !== totals.MGL ||
-            prevTotals.HGL !== totals.HGL ||
-            prevTotals.Live !== totals.Live ||
-            prevTotals.Closed !== totals.Closed
-        ) {
-            return totals;
-        }
-        return prevTotals;
+        const hasChanged = Object.keys(prevTotals).some(
+            key => prevTotals[key] !== totals[key]
+        );
+        return hasChanged ? totals : prevTotals;
     });
 }, [searchTerm, filteredEntries]);
 
@@ -233,15 +251,6 @@ useEffect(() => {
 
   fetchLoanData();
 }, []);
-
-
-
-
-
-
-
-
-
 
 const fetchLedgers = async () => {
   try {
@@ -306,9 +315,10 @@ const fetchLedgers = async () => {
         acc.LGL += entry.schema === "LGL" ? 1 : 0;
         acc.MGL += entry.schema === "MGL" ? 1 : 0;
         acc.HGL += entry.schema === "HGL" ? 1 : 0;
+        acc.HGLSPCL+=entry.schema === "HGL-SPCL" ? 1:0;
         return acc;
       },
-      { LGL: 0, MGL: 0, HGL: 0 }
+      { LGL: 0, MGL: 0, HGL: 0 ,HGLSPCL:0}
     );
 
     // Calculate closed and live accounts
@@ -323,6 +333,7 @@ const fetchLedgers = async () => {
       LGL: ledgerTotals.LGL,
       MGL: ledgerTotals.MGL,
       HGL: ledgerTotals.HGL,
+      HGLSPCL:ledgerTotals.HGLSPCL,
       Live: liveAccountsCount,
       Closed: closedAccountsCount,
     });
@@ -372,10 +383,12 @@ useEffect(() => {
   const mglEntries = allEntries.filter(entry => entry.schema === 'MGL');
   const hglEntries = allEntries.filter(entry => entry.schema === 'HGL');
   const lglEntries = allEntries.filter(entry => entry.schema === 'LGL');
+  const hglspclEntries = allEntries.filter(entry => entry.schema ==='HGL-SPCL');
   
   const mglTotals = calculateTotals(mglEntries);
   const hglTotals = calculateTotals(hglEntries);
   const lglTotals = calculateTotals(lglEntries);
+  const hglspclTotals = calculateTotals(hglspclEntries);
   
   // Now you can use the totals
   const MGLTotalAmount = mglTotals.totalLoanAmount;
@@ -384,11 +397,14 @@ useEffect(() => {
 
   const LGLTotalAmount = lglTotals.totalLoanAmount;
 
+  const HGLSPCLTotalAmount = hglspclTotals.totalLoanAmount;
+
   
   // Combined totals for each schema
   const MGLCombinedTotal = MGLTotalAmount ;
   const HGLCombinedTotal = HGLTotalAmount ;
   const LGLCombinedTotal = LGLTotalAmount;
+  const HGLSPCLCombinedTotal = HGLSPCLTotalAmount;
   
  
   
@@ -497,8 +513,8 @@ useEffect(() => {
           marginTop:"10px",
           marginBottom: "16px",
           display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          gap: "16px",
+          gridTemplateColumns: "repeat(6, 1fr)",
+          gap: "10px",
         }}
       >
         <div
@@ -546,6 +562,22 @@ useEffect(() => {
                 className="mb-0 fw-bold text-info"
               >
                 HGL: {totals.HGL}
+              </Typography>
+            </div>
+        </div>
+          <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+        <div className="d-flex align-items-center justify-content-center w-50 p-2 bg-light rounded shadow-sm" style={{ border: "1px solid rgb(89, 91, 92)" }}>
+              <Typography
+                variant="subtitle2"
+                className="mb-0 fw-bold text-dark"
+              >
+                HGL-SPCL: {totals.HGLSPCL}
               </Typography>
             </div>
         </div>
@@ -905,11 +937,12 @@ useEffect(() => {
   }}
 >
   {[
-    { label: "Loan Amount Total", value: TotalLoanAmount },
+    { label: "Loan Amt Total", value: TotalLoanAmount },
 
-    { label: "LGL  Amount", value: LGLCombinedTotal.toLocaleString() },
-    { label: "MGL  Amount", value: MGLCombinedTotal.toLocaleString() },
-    { label: "HGL Amount", value: HGLCombinedTotal.toLocaleString() },
+    { label: "LGL  Amt", value: LGLCombinedTotal.toLocaleString() },
+    { label: "MGL  Amt", value: MGLCombinedTotal.toLocaleString() },
+    { label: "HGL Amt", value: HGLCombinedTotal.toLocaleString() },
+    {label: "HGL-SPCL Amt",value:HGLSPCLCombinedTotal.toLocaleString()}
   ].map(({ label, value }, index) => (
     <Box
       key={index}

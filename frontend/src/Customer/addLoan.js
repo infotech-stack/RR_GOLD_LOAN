@@ -247,7 +247,7 @@ switch (selectedSchema.name.toLowerCase()) {
   case "hgl":
     daysToAdd = 180; // 6 months
     break;
-  case "hgl spcl":
+  case "hgl-spcl":
     daysToAdd = 90; // 3 months
     break;
   default:
@@ -286,7 +286,7 @@ calculatedDate.setDate(calculatedDate.getDate() + daysToAdd);
             case "hgl":
               daysToAdd = 180; // 6 months
               break;
-            case "hgl spcl":
+            case "hgl-spcl":
               daysToAdd = 90; // 3 months
               break;
             default:

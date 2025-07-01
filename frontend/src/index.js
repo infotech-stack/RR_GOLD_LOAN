@@ -12,10 +12,8 @@ const container = document.getElementById('root');
 const root = createRoot(container); // ✅ Create root for React 18
 
 root.render(
-  <Provider store={store}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+   <Provider store={store}>
+    <App />
   </Provider>
 );
 

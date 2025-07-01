@@ -209,18 +209,23 @@ router.get("/all", async (req, res) => {
             // Subsequent payments: subtract from the previous entry's balance
             loanamountbalance -= entry.interestamount;
           }
-
+  // Prevent negative
           // Update the balance field in LoanEntry
           await LoanEntry.updateOne(
             { _id: entry._id },
             { balance: loanamountbalance }
           );
         }
-
+// Calculate number of days from ledger.date to today (+1 to include start date)
+      const today = new Date();
+      const loanStartDate = new Date(ledger.date);
+      let numberOfdays = Math.floor((today - loanStartDate) / (1000 * 60 * 60 * 24)) + 1;
+      numberOfdays = Math.max(numberOfdays, 0); 
         // Update the ledger's balance
         await Ledger.updateOne(
           { _id: ledger._id },
-          { loanamountbalance: loanamountbalance }
+          { loanamountbalance: loanamountbalance ,
+           numberOfdays: numberOfdays}
         );
       }
     }
@@ -321,7 +326,7 @@ router.get("/merged-loan-data", async (req, res) => {
           numberOfdays = Math.floor((today - latestPaymentDate) / (1000 * 60 * 60 * 24));
         } else {
           // If no paymentDate exists, calculate days from loanStartDate to today
-          numberOfdays = Math.floor((today - loanStartDate) / (1000 * 60 * 60 * 24));
+         numberOfdays = Math.floor((today - loanStartDate) / (1000 * 60 * 60 * 24)) + 1;
         }
 
         // Ensure numberOfdays is not negative
@@ -778,9 +783,5 @@ router.put("/updateLoan/:loanNumber", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-
-
-
 
 module.exports = router;
