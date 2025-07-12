@@ -16,12 +16,16 @@
 }
 .voucher_font{
   font-size: 12px !important;
+  font-family: 'Poppins', sans-serif !important;
 }
 .font_book{
   font-size: 14px !important;
   
 }.font_book1{
   font-size: 12px !important;
+}
+.font-tamil{
+  font-family: 'Poppins', sans-serif !important;
 }
 
 @media print {

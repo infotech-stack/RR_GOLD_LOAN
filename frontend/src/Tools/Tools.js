@@ -114,7 +114,7 @@ const Tools = () => {
                   RR GOLD FINANCE
                 </Typography>
                 <Typography variant="subtitle1" align="center">
-                Cell No: 9488279090, 9489719090
+                Cell No: 9489719090, 6382845409
                 </Typography>
                 <Typography variant="body1" align="center" gutterBottom>
                 960, Main Road, (Opp. Dhana Book Nilayam)

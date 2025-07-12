@@ -352,10 +352,10 @@ const Repledge = () => {
               {t.title}
             </Typography>
             <Typography align="center" className="tit mt-1 ,mb-2">
-  Cell No:9488279090, 9489719090<br />
-  960, Main Road, (Opp. Dhana Book Nilayam)<br />
-  BHAVANI - 638 301. Erode Dt
-</Typography>
+              Cell No: 9489719090, 6382845409 <br />
+              960, Main Road, (Opp. Dhana Book Nilayam)<br />
+              BHAVANI - 638 301. Erode Dt
+            </Typography>
 
             <Typography align="center" className="tit mt-2">
               {t.pledgeDetails}
@@ -1079,7 +1079,7 @@ const Repledge = () => {
         </Grid>
       </Paper>
       <Grid xs={12} align="center" sx={{ mt: 2, mb: 2 }}>
-        <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+        <Button variant="contained" color="secondary" onClick={handleClickOpen} className="print-button">
           View Repledge
         </Button>
       </Grid>

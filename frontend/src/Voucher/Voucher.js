@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import { toWords } from "number-to-words";
 import axios from "axios";
-import CloseIcon from "@mui/icons-material/Close";
 import image from "../../src/Navbar/RR Gold Loan Logo.jpeg";
 import "./Voucher.css";
 import { capitalize } from "lodash";
@@ -153,23 +152,7 @@ const Voucher = () => {
       });
   };
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-  };
-
-  const handleCustomerFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setCustomerFile(selectedFile);
-  };
-
-  const handleCustomerFileRemove = () => {
-    setCustomerFile(null);
-  };
-
-  const handleFileRemove = () => {
-    setFile(null);
-  };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -194,9 +177,84 @@ const Voucher = () => {
     });
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+const handlePrint = () => {
+  // Get the receipt content
+  const receiptContent = document.querySelector('.receipt-print-area');
+  
+  // Create a print container
+  const printContainer = document.createElement('div');
+  printContainer.className = 'print-container';
+  
+  // Clone the content twice
+  const copy1 = receiptContent.cloneNode(true);
+  const copy2 = receiptContent.cloneNode(true);
+  copy1.querySelector('select[name="loanNo"]').value = formData.loanNo;
+copy2.querySelector('select[name="loanNo"]').value = formData.loanNo;
+
+  
+  
+  // Build the print document
+  printContainer.appendChild(copy1);
+  printContainer.appendChild(copy2);
+  
+  // Add to body
+  document.body.appendChild(printContainer);
+  
+  // Add print styles
+  const style = document.createElement('style');
+  style.innerHTML = `
+  @media print {
+    body > *:not(.print-container) {
+      display: none !important;
+    }
+
+    .print-container {
+      display: flex !important;
+      flex-direction: column;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      page-break-inside: avoid;
+    }
+
+    .receipt-print-area {
+      margin: 8mm auto 10mm auto;
+      width: 100%;
+      max-width: 180mm; /* A4 width with some padding */
+      page-break-inside: avoid;
+    }
+
+    .print-container .receipt-print-area + .receipt-print-area {
+      margin-top: 10mm; /* spacing between the two copies */
+    }
+
+    .print-divider {
+      display: none; /* Remove any page break divider */
+    }
+
+    .print-button {
+      display: none !important;
+    }
+  }
+
+  @media screen {
+    .print-container {
+      display: none !important;
+    }
+  }
+`;
+
+  document.head.appendChild(style);
+
+  window.print();
+
+  // Clean up
+  setTimeout(() => {
+    document.head.removeChild(style);
+    document.body.removeChild(printContainer);
+  }, 1000);
+};
 
   return (
     <div style={{ padding: "20px", marginTop: "0px" }}>
@@ -204,17 +262,17 @@ const Voucher = () => {
         elevation={2}
         style={{ padding: "20px" }}
         sx={{ maxWidth: 600, margin: "auto",mt:-1 }}
-        className="paperbg2"
+        className="paperbg2 receipt-print-area"
       >
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+        <Grid container spacing={2} >
+          <Grid item xs={12} sm={5}>
             <img
               src={image}
               alt="Logo"
-              style={{ width: "50%", height: "auto" }}
+              style={{ width: "60%", height: "auto",marginRight:"40px" }}
             />
           </Grid>
-          <Grid item xs={12} sm={8}>
+          <Grid item xs={12} sm={7}>
             <Typography
               variant="h6"
               align="center"
@@ -224,9 +282,9 @@ const Voucher = () => {
              RR GOLD FINANCE
             </Typography>
             <Typography variant="subtitle1" align="center" sx={{mt:-1}}>
-            Cell No: 9488279090, 9489719090
+            Cell No:  9489719090, 6382845409
             </Typography>
-            <Typography variant="body1" align="center" gutterBottom>
+            <Typography variant="body1" fontSize={14} align="center" gutterBottom>
             960, Main Road, (Opp. Dhana Book Nilayam)
               <br />
               BHAVANI - 638 301. Erode Dt
@@ -366,104 +424,54 @@ const Voucher = () => {
                 </Table>
               </TableContainer>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={4}>
               <TextField
-                label=" Loan Amount"
-                name="amount"
-                value={formData.loanAmount}
-                onChange={handleInputChange}
+                label="Total Paid"
+                value={
+                  (parseFloat(formData.interestAmount) || 0) +
+                  (parseFloat(formData.interestPrinciple) || 0)
+                }
                 InputLabelProps={{
                   shrink: true,
                 }}
                 variant="outlined"
                 fullWidth
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label=" Interest"
-                name="amount"
-                value={formData.interest}
-                onChange={handleInputChange}
-                InputLabelProps={{
-                  shrink: true,
+                InputProps={{
+                  readOnly: true,
                 }}
-                variant="outlined"
-                fullWidth
-                required
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
-              {file ? (
-                <div style={{ position: "relative", textAlign: "center" }}>
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt="Cashier Sign"
-                    style={{ width: "90%", height: "60px" }}
-                  />
-                  <IconButton
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      background: "rgba(255, 255, 255, 0.7)",
-                    }}
-                    onClick={handleFileRemove}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </div>
-              ) : (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  component="label"
-                  fullWidth
-                  sx={{ textTransform: "capitalize", height: "54px" }}
-                >
-                  Cashier Sign
-                  <input type="file" hidden onChange={handleFileChange} />
-                </Button>
-              )}
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              {customerFile ? (
-                <div style={{ position: "relative", textAlign: "center" }}>
-                  <img
-                    src={URL.createObjectURL(customerFile)}
-                    alt="Customer Sign"
-                    style={{ width: "90%", height: "60px" }}
-                  />
-                  <IconButton
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      background: "rgba(255, 255, 255, 0.7)",
-                    }}
-                    onClick={handleCustomerFileRemove}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </div>
-              ) : (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  component="label"
-                  fullWidth
-                  sx={{ textTransform: "capitalize", height: "54px" }}
-                >
-                  Customer Sign
-                  <input
-                    type="file"
-                    hidden
-                    onChange={handleCustomerFileChange}
-                  />
-                </Button>
-              )}
-            </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Cashier Sign"
+            name="cashierSign"
+            value={formData.cashierSign}
+            onChange={handleInputChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
+            fullWidth
+            
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Customer Sign"
+            name="customerSign"
+            value={formData.customerSign}
+            onChange={handleInputChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
+            fullWidth
+         
+          />
+        </Grid>
+
 
             <Grid item xs={12} align="center">
               <Button
@@ -480,6 +488,7 @@ const Voucher = () => {
           </Grid>
         </form>
       </Paper>
+  
     </div>
   );
 };
