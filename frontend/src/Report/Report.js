@@ -353,6 +353,7 @@ const Report = () => {
       schema: (formData && formData.schema) || row.schema,
       noOfDays: row.noOfDays,
       interestamount: row.interestamount,
+      receiptNo:row.receiptNo,
       interestPrinciple: row.interestPrinciple,
       balance: row.balance,
     });
@@ -802,6 +803,25 @@ const Report = () => {
     });
   };
 
+
+    // Fetch next receipt no on component mount
+  useEffect(() => {
+    const fetchNextReceiptNo = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/loanEntry/next-receipt-no`);
+        if (!response.ok) throw new Error('Failed to fetch receipt number');
+        const data = await response.json();
+        setFormData(prev => ({ ...prev, receiptNo: data.receiptNo }));
+      } catch (error) {
+        console.error(error);
+        // Optionally handle error, show message etc.
+      }
+    };
+
+    fetchNextReceiptNo();
+  }, []); // empty dependency [] = only run on mount
+
+  
   return (
     <>
       <Snackbar open={snackbarOpen} onClose={handleSnackbarClose}>

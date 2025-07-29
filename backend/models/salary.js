@@ -17,6 +17,10 @@ const SalarySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  voucherNo: {
+    type: Number,
+    required: true,
+  }
 });
 
 const Salary = mongoose.model('Salary', SalarySchema);

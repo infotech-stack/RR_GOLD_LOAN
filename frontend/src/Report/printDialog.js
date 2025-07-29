@@ -14,6 +14,7 @@ import {
   Grid,
   IconButton,
   Typography,
+  Box
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
@@ -112,7 +113,14 @@ const PrintDialog = ({ open, onClose, data }) => {
                       <strong>RECEIPT VOUCHER</strong>
                     </Typography>
                   </Grid>
+                
                 </Grid>
+                  <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
+                    <Typography variant="body1" fontWeight={500} mr={1}>
+                      Receipt No:
+                    </Typography>
+                    <Typography variant="body1">{data.receiptNo}</Typography>
+                  </Box>
                 <Grid container spacing={2} sx={{ mt: 1 }}>
                   <Grid item xs={12} sm={6}>
                     <TextField

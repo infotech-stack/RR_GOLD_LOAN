@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef ,useEffect} from "react";
 import axios from "axios";
 import Swal from "sweetalert";
 import {
@@ -15,6 +15,8 @@ import image from "../../src/Navbar/RR Gold Loan Logo.jpeg";
 import { toWords } from "number-to-words";
 import PaidVoucher from "./paidvoucher";
 import { useReactToPrint } from "react-to-print";
+import { fetchNextVoucherNo } from '../utils/voucherUtils';
+
 const Tools = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -25,6 +27,7 @@ const Tools = () => {
   });
   const [receivedFile, setReceivedFile] = useState(null);
   const [authorizedFile, setAuthorizedFile] = useState(null);
+   const [voucherNo, setVoucherNo] = useState("");
   const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
@@ -68,6 +71,8 @@ const Tools = () => {
       );
 
       console.log(response.data);
+      const updatedVoucherNo = await fetchNextVoucherNo();
+          setVoucherNo(updatedVoucherNo);
       Swal({
         title: "Success!",
         text: "Received voucher stored successfully!",
@@ -86,7 +91,12 @@ const Tools = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-
+  useEffect(() => {
+    const storedVoucherNo = sessionStorage.getItem('currentVoucherNo');
+    if (storedVoucherNo !== null && storedVoucherNo !== undefined) {
+      setVoucherNo(Number(storedVoucherNo));
+    }
+  }, []);
   return (
     <>
       <div ref={componentRef} className="printable-div">
@@ -96,6 +106,7 @@ const Tools = () => {
             style={{ padding: "20px" }}
             sx={{ maxWidth: 600, margin: "auto", backgroundColor: "#fdfffd" }}
           >
+        
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
                 <img
@@ -130,6 +141,11 @@ const Tools = () => {
                 >
                   RECEIVED VOUCHER
                 </Typography>
+                  {voucherNo !== null && voucherNo !== undefined && (
+                                    <Typography variant="subtitle1" align="center" sx={{ mb: 2, color: "black" }} className="print-button">
+                                     Next Voucher No: <strong>{voucherNo}</strong>
+                                    </Typography>
+                                      )}
               </Grid>
             </Grid>
             <form onSubmit={handleSubmit}>

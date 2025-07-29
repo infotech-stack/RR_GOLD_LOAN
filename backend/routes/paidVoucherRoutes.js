@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const PaidVoucher = require('../models/paidvouchers');
+const { generateNextVoucherNo } = require('../utils/voucherNoUtil');
 
-// Create a new Paid Voucher
 router.post('/add', async (req, res) => {
   try {
-    const { name, amount, rupeesInWords, purposeOfAmount, receivedSignPath, authorizedSignPath, date } = req.body;
+    const { name, amount, rupeesInWords, purposeOfAmount, receivedSignPath, authorizedSignPath, date, voucherNo } = req.body;
+
+    // Generate voucherNo if not provided
+    const newVoucherNo = voucherNo || await generateNextVoucherNo();
 
     const newPaidVoucher = new PaidVoucher({
       name,
@@ -15,6 +18,7 @@ router.post('/add', async (req, res) => {
       receivedSignPath,
       authorizedSignPath,
       date,
+      voucherNo: newVoucherNo,
     });
 
     await newPaidVoucher.save();

@@ -23,7 +23,7 @@ const filterCustomerData = (data) => {
 router.post('/create', async (req, res) => {
     try {
         const customerData = filterCustomerData(req.body);
-        console.log('Filtered customer data:', customerData); // Log filtered data
+    
         const customer = new Customer(customerData);
         await customer.save();
         res.status(201).json(customer);

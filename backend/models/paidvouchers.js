@@ -8,6 +8,10 @@ const paidVoucherSchema = new mongoose.Schema({
   receivedSignPath: { type: String},
   authorizedSignPath: { type: String},
   date: { type: Date, default: Date.now },
+  voucherNo: {
+    type: Number,
+    required: true,
+  }
 });
 
 const PaidVoucher = mongoose.model("PaidVoucher", paidVoucherSchema);

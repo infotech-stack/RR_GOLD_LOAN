@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
   }
 });
 router.post('/login', async (req, res) => {
-  console.log('Admin Login request body:', req.body);
+
   try {
     const { adminId, password } = req.body;
 

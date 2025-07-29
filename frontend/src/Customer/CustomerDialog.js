@@ -379,7 +379,7 @@ const CustomerDialog = ({
           } else if (updatedEntry.schema === "HGL") {
             interest = calculateInterest(value, 24, 6);  // 24% for 6 months
           } else if (updatedEntry.schema === "HGL-SPCL") {
-            interest = calculateInterest(value, 24, 3);  // 24% for 3 months
+            interest = calculateInterest(value, 30, 3);  // 24% for 3 months
           }
 
           updatedEntry.interest = interest;
@@ -435,8 +435,8 @@ const handleSchemaChange = (e) => {
       daysToAdd = 180;
       break;
     case "HGL-SPCL":
-      percent = "24%";
-      interestPercent = 24;
+      percent = "30%";
+      interestPercent = 30;
       interestMonths = 3;
       daysToAdd = 90;
       break;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {
@@ -10,7 +10,9 @@ import {
   Paper,
 } from "@mui/material";
 import { Form } from "react-bootstrap";
+import { fetchNextVoucherNo } from '../utils/voucherUtils';
 const Salary = () => {
+  const [voucherNo, setVoucherNo] = useState("");
   const [formData, setFormData] = useState({
     employeeName: "",
     designation: "",
@@ -56,7 +58,8 @@ const Salary = () => {
       );
 
       console.log("Salary added:", response.data);
-
+const updatedVoucherNo = await fetchNextVoucherNo();
+    setVoucherNo(updatedVoucherNo);
       setFormData({
         employeeName: "",
         designation: "",
@@ -84,7 +87,12 @@ const Salary = () => {
       });
     }
   };
-
+  useEffect(() => {
+    const storedVoucherNo = sessionStorage.getItem('currentVoucherNo');
+    if (storedVoucherNo !== null && storedVoucherNo !== undefined) {
+      setVoucherNo(Number(storedVoucherNo));
+    }
+  }, []);
   return (
     <Container sx={{ mt: 8 }}>
       <Paper
@@ -106,6 +114,11 @@ const Salary = () => {
         >
           SALARY PAYMENT
         </Typography>
+           {voucherNo !== null && voucherNo !== undefined && (
+        <Typography variant="subtitle1" align="center" sx={{ mb: 2, color: "#666" }}>
+          Voucher No: <strong>{voucherNo}</strong>
+        </Typography>
+      )}
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={12}>

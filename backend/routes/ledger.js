@@ -52,9 +52,7 @@ router.post(
         jewelList
       } = req.body;
 
-      // Log the incoming request for debugging
-      console.log('Incoming Request Body:', req.body);
-      console.log('Incoming Files:', req.files);
+  
 
       // Safely parse the jewelList, if present
       let jewelListParsed = [];
@@ -143,7 +141,6 @@ router.post(
         jewelList: jewelListParsed,
       });
 
-      console.log('Saving Ledger Entry:', newLedger);
       await newLedger.save();
 
       res.status(201).json({ message: 'Ledger entry created successfully' });
@@ -161,7 +158,7 @@ router.get("/loans/:customerId", async (req, res) => {
   try {
     const loans = await Ledger.find({ customerId });
 
-    console.log("Loans retrieved from database:", loans); // Log the full data
+   
 
     if (loans.length > 0) {
       res.status(200).json(loans);
@@ -467,7 +464,6 @@ router.get("/loan/:loanNumber", async (req, res) => {
         thumbImpression: ledger.thumbImpression ? `${process.env.REACT_APP_BACKEND_URL}${ledger.thumbImpression}` : null,
       };
 
-      console.log(imageUrls); // Log image URLs to the console
 
       res.status(200).json({ ...ledger.toObject(), imageUrls });
     } else {
@@ -698,8 +694,7 @@ router.put(
           customerId, customerName, mobileNumber1, fatherhusname, landmark, address, schema, 
           percent, loanAmount, interest, mobileNumber2, date, lastDateForLoan, iw, gw, nw, jewelList
         } = req.body;
-        console.log("Incoming date string:", date);
-        console.log("Incoming lastDateForLoan string:", lastDateForLoan);
+  
         // Only update fields if they exist in the request body
         nonFileUpdateData = {
           ...(customerId && { customerId }),
@@ -754,8 +749,7 @@ router.put(
 
 
 router.put("/updateLoan/:loanNumber", async (req, res) => {
-  console.log("PUT request received for loanNumber:", req.params.loanNumber);
-  console.log("Request body:", req.body);
+
 
   const { loanNumber } = req.params;
   const {

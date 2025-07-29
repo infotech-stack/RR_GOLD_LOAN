@@ -12,6 +12,7 @@ const loanEntrySchema = new mongoose.Schema({
   interestPrinciple: { type: Number, required: true },
   interestamount: { type: Number, required: true },
   balance: { type: Number, required: true },
+  receiptNo:{type:String,required:true},
   isClosed: { type: Boolean, default: false }
 });
 

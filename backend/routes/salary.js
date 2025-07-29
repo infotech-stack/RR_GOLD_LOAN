@@ -1,25 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const Salary = require('../models/salary');
+const { generateNextVoucherNo } = require('../utils/voucherNoUtil');
 
 // Route: POST /api/salary/add
 // Description: Add new salary entry
 router.post('/add', async (req, res) => {
-  const { employeeName, designation, date, salaryAmount } = req.body;
-
   try {
+    const { employeeName, date, designation, voucherNo ,salaryAmount} = req.body;
+
+    const newVoucherNo = voucherNo || await generateNextVoucherNo();
+
     const newSalary = new Salary({
-      employeeName,
-      designation,
-      date,
-      salaryAmount,
+  employeeName,
+  designation,
+  date,
+  salaryAmount,
+  voucherNo: newVoucherNo,
     });
 
     await newSalary.save();
-    res.status(201).json(newSalary); // Respond with the saved salary data
+    res.status(201).json(newSalary);
   } catch (error) {
     console.error('Error adding salary:', error);
-    res.status(500).json({ error: 'Failed to add salary entry' });
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 router.get('/', async (req, res) => {

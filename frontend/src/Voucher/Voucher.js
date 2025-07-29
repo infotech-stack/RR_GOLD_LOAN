@@ -11,6 +11,7 @@ import {
   TableRow,
   IconButton,
   TableCell,
+  Box,
 } from "@mui/material";
 import { toWords } from "number-to-words";
 import axios from "axios";
@@ -38,6 +39,8 @@ const Voucher = () => {
     interestPrinciple: "",
     interestAmount: "",
     balance: "",
+    paymentDate:"",
+    receiptNo:""
   });
   const [file, setFile] = useState(null);
   const [customerFile, setCustomerFile] = useState(null);
@@ -115,6 +118,8 @@ const Voucher = () => {
           loanNo: ledgerData.loanNumber,
           
           date: formattedDate,
+          paymentDate:ledgerData.paymentDate,
+          receiptNo:ledgerData.receiptNo,
           customerName: ledgerData.customerName,
           schema: ledgerData.schema,
           rupeesInWords: amountInWords,
@@ -144,6 +149,8 @@ const Voucher = () => {
             interestPrinciple: latestEntry.interestPrinciple,
             interestAmount: latestEntry.interestamount,
             balance: latestEntry.balance,
+            paymentDate:latestEntry.paymentDate,
+            receiptNo:latestEntry.receiptNo
           }));
         }
       })
@@ -296,6 +303,13 @@ copy2.querySelector('select[name="loanNo"]').value = formData.loanNo;
             </Typography>
           </Grid>
         </Grid>
+  <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
+  <Typography variant="body1" fontWeight={500} mr={1}>
+    Receipt No:
+  </Typography>
+  <Typography variant="body1">{formData.receiptNo}</Typography>
+</Box>
+
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
@@ -371,7 +385,7 @@ copy2.querySelector('select[name="loanNo"]').value = formData.loanNo;
                 label="Date"
                 name="date"
                 type="date"
-                value={formData.date}
+                value={formData.paymentDate}
                 onChange={handleInputChange}
                 variant="standard"
                 fullWidth

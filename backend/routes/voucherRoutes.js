@@ -1,10 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Voucher = require('../models/voucher');
+const { generateNextVoucherNo } = require('../utils/voucherNoUtil');
 
 router.post('/add', async (req, res) => {
   try {
-    const { name, amount, rupeesInWords, purposeOfAmount, date } = req.body;
+    const { name, amount, rupeesInWords, purposeOfAmount, date, voucherNo } = req.body;
+
+    // Generate voucherNo if not provided
+    const newVoucherNo = voucherNo || await generateNextVoucherNo();
 
     const newVoucher = new Voucher({
       name,
@@ -12,6 +16,7 @@ router.post('/add', async (req, res) => {
       rupeesInWords,
       purposeOfAmount,
       date,
+      voucherNo: newVoucherNo,
     });
 
     await newVoucher.save();

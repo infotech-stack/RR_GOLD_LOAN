@@ -147,11 +147,12 @@ const Repledge = () => {
     date: "",
     customerId: "",
     customerName: "",
-    fatherName: "",
+    fatherhusname: "",
     address: "",
     aadhaarNumber: "",
     mobileNumber: "",
     occupation: "",
+    percent:"",
     interestRate: "",
     tenure: "",
     amount: "",
@@ -182,6 +183,7 @@ const Repledge = () => {
   };
   const today = dayjs().format("YYYY-MM-DD");
   const t = translations[selectedLanguage];
+
   const handlePrint = () => {
     window.print();
   };
@@ -297,12 +299,12 @@ const Repledge = () => {
           date: reportData.date ? new Date(reportData.date).toISOString().split("T")[0] : prevData.date,
           customerId: reportData.customerId || prevData.customerId,
           customerName: reportData.customerName || prevData.customerName,
-          fatherName: reportData.fatherName || prevData.fatherName,
+          fatherhusname: reportData.fatherhusname || prevData.fatherhusname,
           address: reportData.address || prevData.address,
           aadhaarNumber: reportData.aadhaarNumber || prevData.aadhaarNumber,
           mobileNumber: reportData.mobileNumber1 || prevData.mobileNumber,
           occupation: reportData.occupation || prevData.occupation,
-          interestRate: reportData.interestRate || prevData.interestRate,
+          percent: reportData.percent || prevData.percent,
           tenure: reportData.tenure || prevData.tenure,
           amount: reportData.loanAmount || prevData.amount,
           goldSaleNo: reportData.goldSaleNo || prevData.goldSaleNo,
@@ -318,6 +320,7 @@ const Repledge = () => {
           goodsDescription: reportData.jDetails || prevData.goodsDescription,
           quantity: reportData.quantity || prevData.quantity,
           purity: reportData.quality || prevData.purity,
+          jewelList: reportData.jewelList || [],
         }));
         console.log("Last date for loan:", formattedLastDateForLoan);
       })
@@ -325,14 +328,25 @@ const Repledge = () => {
         console.error("Error fetching report data:", error);
       });
   };
-  
+  const handleJewelChange = (e, index, field) => {
+  const value = e.target.value;
+  setFormData((prevData) => {
+    const updatedJewelList = [...prevData.jewelList];
+    updatedJewelList[index][field] = value;
+    return {
+      ...prevData,
+      jewelList: updatedJewelList,
+    };
+  });
+};
+
   return (
     <>
       <Paper
         elevation={2}
         style={{ padding: "20px" }}
-        sx={{ maxWidth: 800, margin: "auto", mt: 0 }}
-        className="aggre"
+        sx={{ maxWidth: 900, margin: "auto", mt: 0 }}
+        className="aggre print-gap"
       >
         <form onSubmit={handleSubmit}>
           <Box p={3}>
@@ -454,7 +468,7 @@ const Repledge = () => {
                   fullWidth
                   className="textField"
                   name="fatherName"
-                  value={formData.fatherName}
+                  value={formData.fatherhusname}
                   onChange={handleChange}
                   error={!!validationErrors.fatherName}
                   helperText={validationErrors.fatherName}
@@ -557,7 +571,7 @@ const Repledge = () => {
                   fullWidth
                   className="textField"
                   name="interestRate"
-                  value={formData.interestRate}
+                  value={formData.percent}
                   onChange={handleChange}
                   error={!!validationErrors.interestRate}
                   helperText={validationErrors.interestRate}
@@ -793,22 +807,22 @@ const Repledge = () => {
                         className="textField"
                       >
                         {selectedLanguage === "tamil"
-                          ? "எண்ணிக்கை"
+                          ? "எண்"
                           : "Quantity"}
                       </TableCell>
                       <TableCell
                         sx={{ border: "1px solid black" }}
                         className="textField"
                       >
-                        {selectedLanguage === "tamil" ? "தரம்" : "Purity"}
+                        {selectedLanguage === "tamil" ? "தரம்" : "Quality"}
                       </TableCell>
                       <TableCell
                         sx={{ border: "1px solid black" }}
                         className="textField"
                       >
                         {selectedLanguage === "tamil"
-                          ? "மொத்த ஏடை"
-                          : "Gross Weight"}
+                          ? "பொருள் எடை"
+                          : "Item Weight"}
                       </TableCell>
                       <TableCell
                         sx={{ border: "1px solid black" }}
@@ -818,76 +832,87 @@ const Repledge = () => {
                           ? "நிகர எடை"
                           : "Net Weight"}
                       </TableCell>
+                      <TableCell
+                        sx={{ border: "1px solid black" }}
+                        className="textField"
+                      >
+                        {selectedLanguage === "tamil"
+                          ? "மொத்த எடை"
+                          : "Gross Weight"}
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableRow>
-                      <TableCell sx={{ border: "1px solid black" }}>
-                        <TextField
-                          label=""
-                          variant="outlined"
-                          fullWidth
-                          className="textField"
-                          name="goodsDescription"
-                          onChange={handleChange}
-                          value={formData.goodsDescription}
-                          error={!!validationErrors.goodsDescription}
-                          helperText={validationErrors.goodsDescription}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ border: "1px solid black" }}>
-                        <TextField
-                          label=""
-                          variant="outlined"
-                          fullWidth
-                          className="textField"
-                          name="quantity"
-                          onChange={handleChange}
-                          value={formData.quantity}
-                          error={!!validationErrors.quantity}
-                          helperText={validationErrors.quantity}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ border: "1px solid black" }}>
-                        <TextField
-                          label=""
-                          variant="outlined"
-                          fullWidth
-                          className="textField"
-                          name="purity"
-                          value={formData.purity}
-                          onChange={handleChange}
-                          error={!!validationErrors.purity}
-                          helperText={validationErrors.purity}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ border: "1px solid black" }}>
-                        <TextField
-                          label=""
-                          variant="outlined"
-                          fullWidth
-                          className="textField"
-                          onChange={handleChange}
-                          name="grossWeight"
-                          value={formData.grossWeight}
-                          error={!!validationErrors.grossWeight}
-                          helperText={validationErrors.grossWeight}
-                        />
-                      </TableCell>
-                      <TableCell sx={{ border: "1px solid black" }}>
-                        <TextField
-                          label=""
-                          variant="outlined"
-                          fullWidth
-                          className="textField"
-                          name="netWeight"
-                          value={formData.netWeight}
-                          onChange={handleChange}
-                          error={!!validationErrors.netWeight}
-                          helperText={validationErrors.netWeight}
-                        />
-                      </TableCell>
-                    </TableRow>
+                   {formData.jewelList?.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell sx={{ border: "1px solid black" }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name={`jewelList[${index}].jDetails`}
+                      value={item.jDetails}
+                      onChange={(e) => handleJewelChange(e, index, 'jDetails')}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ border: "1px solid black" }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name={`jewelList[${index}].quantity`}
+                      value={item.quantity}
+                      onChange={(e) => handleJewelChange(e, index, 'quantity')}
+                    />
+                  </TableCell>
+                <TableCell sx={{ border: "1px solid black", minWidth: 150, maxWidth: 200 }}>
+  <TextField
+    variant="outlined"
+    fullWidth
+    multiline
+    minRows={1}
+    maxRows={3}
+    inputProps={{
+      style: { whiteSpace: 'normal', wordWrap: 'break-word' }
+    }}
+    name={`jewelList[${index}].quality`}
+    value={item.quality}
+    onChange={(e) => handleJewelChange(e, index, 'quality')}
+  />
+</TableCell>
+
+                  <TableCell sx={{ border: "1px solid black" }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name={`jewelList[${index}].iw`}
+                      value={item.iw}
+                      onChange={(e) => handleJewelChange(e, index, 'iw')}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ border: "1px solid black" }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name="netWeight"
+                      value={formData.netWeight}
+                      onChange={handleChange}
+                      error={!!validationErrors.netWeight}
+                      helperText={validationErrors.netWeight}
+                    />
+                  </TableCell>
+                                    <TableCell sx={{ border: "1px solid black" }}>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      name="grossWeight"
+                      value={formData.grossWeight}
+                      onChange={handleChange}
+                      error={!!validationErrors.grossWeight}
+                      helperText={validationErrors.grossWeight}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -898,8 +923,8 @@ const Repledge = () => {
       <Paper
         elevation={2}
         style={{ padding: "20px" }}
-        sx={{ maxWidth: 800, margin: "auto", mt: 7 }}
-        className="aggre"
+        sx={{ maxWidth: 900, margin: "auto", mt: 7 }}
+        className="aggre print-gap"
       >
         <Grid container>
           <Grid item xs={12}>

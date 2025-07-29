@@ -1106,6 +1106,15 @@ const Reminders = () => {
                     className="form-control"
                   />
                 </div>
+                <div className="mb-3">
+                  <label className="form-label">Voucher No</label>
+                  <input
+                    type="text"
+                    name="voucherNo"
+                    defaultValue={currentExpense.voucherNo}
+                    className="form-control"
+                  />
+                </div>
 
                 </form>
               )}
@@ -1177,6 +1186,7 @@ const Reminders = () => {
                     <th>Designation</th>
                     <th>Date</th>
                     <th>Salary Amount</th>
+                    <th>Voucher No</th>
                     <th className="actions-column">Actions</th>
                   </tr>
                 </thead>
@@ -1187,6 +1197,7 @@ const Reminders = () => {
                       <td>{payment.designation}</td>
                       <td>{payment.date}</td>
                       <td>{payment.salaryAmount}</td>
+                      <td>{payment.voucherNo}</td>
                       <td className="actions-column">
                         <button
                           className="btn btn-warning btn-sm me-2"
@@ -1296,6 +1307,7 @@ const Reminders = () => {
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Purpose</th>
+                    <th>Voucher No</th>
                     <th className="actions-column">Actions</th>
                   </tr>
                 </thead>
@@ -1306,6 +1318,7 @@ const Reminders = () => {
                       <td>{voucher.amount}</td>
                       <td>{voucher.date}</td>
                       <td>{voucher.purposeOfAmount}</td>
+                      <td>{voucher.voucherNo}</td>
                       <td className="actions-column">
                         <button
                           className="btn btn-warning btn-sm me-2"
@@ -1446,6 +1459,7 @@ const Reminders = () => {
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Purpose</th>
+                    <th>Voucher No</th>
                     <th className="actions-column">Actions</th>
                   </tr>
                 </thead>
@@ -1456,6 +1470,7 @@ const Reminders = () => {
                       <td>{paidvoucher.amount}</td>
                       <td>{paidvoucher.date}</td>
                       <td>{paidvoucher.purposeOfAmount}</td>
+                      <td>{paidvoucher.voucherNo}</td>
                       <td className="actions-column">
                         <button
                           className="btn btn-warning btn-sm me-2"
@@ -1577,6 +1592,7 @@ const Reminders = () => {
                     <th>Principle Paid</th>
                     <th>Interest Paid</th>
                     <th>Balance</th>
+                    <th>Receipt No</th>
                     <th className="actions-column">Actions</th>
                   </tr>
                 </thead>
@@ -1589,6 +1605,7 @@ const Reminders = () => {
                       <td>{appraisal.interestamount}</td>
                       <td>{appraisal.interestPrinciple}</td>
                       <td>{appraisal.balance}</td>
+                      <td>{appraisal.receiptNo}</td>
                       <td>
                         <button
                           className="btn btn-danger btn-sm"

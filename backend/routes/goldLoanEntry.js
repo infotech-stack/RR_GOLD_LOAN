@@ -5,7 +5,6 @@ const GoldLoanEntry = require('../models/GoldLoanEntry');
 // Add a new gold loan entry
 router.post('/add', async (req, res) => {
   try {
-    console.log('Request Payload:', req.body);
     const entry = new GoldLoanEntry(req.body);
     await entry.save();
     res.status(201).send(entry);

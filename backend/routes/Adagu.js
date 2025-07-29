@@ -5,7 +5,7 @@ const Adagu = require('../models/adagu_entry');
 
 router.post('/add', async (req, res) => {
   try {
-    console.log('Received request body:', req.body); // Log the received body
+
     const newAdagu = new Adagu(req.body);
     const savedAdagu = await newAdagu.save();
     res.json(savedAdagu);

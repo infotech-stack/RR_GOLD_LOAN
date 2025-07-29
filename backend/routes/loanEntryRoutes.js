@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const LoanEntry = require('../models/loanEntry');
+const { getNextReceiptNo, peekNextReceiptNo } = require('../utils/receiptNoUtil');
+
 
 // Route to add a new loan entry
 router.post('/add', async (req, res) => {
   try {
-    // Extract data from the request body
     const newLoanEntryData = req.body;
 
-    // Create a new LoanEntry document with the provided data
-    const newLoanEntry = new LoanEntry(newLoanEntryData);
+    // Generate new receiptNo independently for this loan entry
+    newLoanEntryData.receiptNo = await getNextReceiptNo();
 
-    // Save the new LoanEntry to the database
+    const newLoanEntry = new LoanEntry(newLoanEntryData);
     await newLoanEntry.save();
 
-    // Respond with the newly created LoanEntry
     res.status(201).json(newLoanEntry);
   } catch (error) {
     console.error('Error saving loan entry:', error);
@@ -35,6 +35,15 @@ router.get('/byLoanNo/:loanNo', async (req, res) => {
 });
 // Route to fetch loan entry by loan number
 
+router.get('/next-receipt-no', async (req, res) => {
+  try {
+    const nextReceiptNo = await peekNextReceiptNo();
+    res.status(200).json({ receiptNo: nextReceiptNo });
+  } catch (error) {
+    console.error('Error fetching next receipt number:', error);
+    res.status(500).json({ message: 'Failed to fetch next receipt number', error: error.message });
+  }
+});
 
 // Route to fetch all loan entries
 router.get('/all', async (req, res) => {
@@ -62,6 +71,7 @@ router.get('/:loanNumber', async (req, res) => {
   }
 });
 router.put('/updateClosed/:loanNo', async (req, res) => {
+  const newReceiptNo = await getNextReceiptNo();
   try {
     const { loanNo } = req.params;
     const {
@@ -71,6 +81,7 @@ router.put('/updateClosed/:loanNo', async (req, res) => {
       loanamountbalance,  // New loan amount balance for this new payment
       interestPrincipleNum,
       interestAmountNum,
+      receiptNo,
       paymentDate
     } = req.body;
 
@@ -99,11 +110,12 @@ router.put('/updateClosed/:loanNo', async (req, res) => {
         interestbalamount: interestbalamount || 0,
         loanamountbalance: loanamountbalance || 0,  // Initial balance from first payment
         customerId,
+        receiptNo : newReceiptNo,
         paymentDate: new Date(paymentDate).toISOString().split('T')[0],
       });
 
       await newLoanEntry.save();
-      console.log("New loan entry created for loanNo:", loanNo);
+     
       return res.status(201).send({
         message: 'New loan entry created successfully',
         loanEntry: newLoanEntry
@@ -136,11 +148,12 @@ router.put('/updateClosed/:loanNo', async (req, res) => {
       interestbalamount: interestbalamount || 0,
       loanamountbalance: loanamountbalance,  // This is the new loan amount balance (for this payment)
       customerId,
+      receiptNo,
       paymentDate: new Date(paymentDate).toISOString().split('T')[0],
     });
 
     await paymentEntry.save();
-    console.log("New payment entry created for loanNo:", loanNo);
+   
 
     return res.status(201).send({
       message: 'Payment entry created successfully',
@@ -153,14 +166,6 @@ router.put('/updateClosed/:loanNo', async (req, res) => {
     return res.status(500).send({ message: 'Error updating loan entry', error: error.message });
   }
 });
-
-
-
-
-
-
-
-
 
 
 

@@ -15,6 +15,7 @@ import {
 import { Form } from "react-bootstrap";
 import { faCreditCard   } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { fetchNextVoucherNo } from '../utils/voucherUtils';
 const Accounts = () => {
   const [productName, setProductName] = useState("");
   const [date, setDate] = useState("");
@@ -24,6 +25,7 @@ const Accounts = () => {
   const [weight, setWeight] = useState("");
   const [voucherNo, setVoucherNo] = useState("");
   const [errors, setErrors] = useState({});
+
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -65,7 +67,8 @@ const Accounts = () => {
       // Reset form fields and errors
       resetForm();
       setErrors({});
-
+    const updatedVoucherNo = await fetchNextVoucherNo();
+    setVoucherNo(updatedVoucherNo);
       // Show SweetAlert success message
       Swal.fire({
         icon: "success",
@@ -95,24 +98,34 @@ const Accounts = () => {
     setWeight("");
     setVoucherNo("");
   };
-  const fetchNextVoucherNo = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/expenses/next-voucher`
-      );
-      console.log("Voucher response:", response.data); // Log response
-      setVoucherNo(response.data.voucherNo);
-    } catch (error) {
-      console.error("Error fetching voucher number:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to fetch voucher number.",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
+// const fetchNextVoucherNo = async () => {
+//   try {
+//     const response = await axios.get(
+//       `${process.env.REACT_APP_BACKEND_URL}/api/expenses/next-voucher`
+//     );
+//     console.log("Voucher response:", response.data); // Log response
+    
+//     const voucherNo = response.data.voucherNo;
+
+//     setVoucherNo(voucherNo);
+//     sessionStorage.setItem('currentVoucherNo', voucherNo);  // store in sessionStorage
+//   } catch (error) {
+//     console.error("Error fetching voucher number:", error);
+//     Swal.fire({
+//       icon: "error",
+//       title: "Error!",
+//       text: "Failed to fetch voucher number.",
+//       confirmButtonColor: "#3085d6",
+//       confirmButtonText: "OK",
+//     });
+//   }
+// };
+  useEffect(() => {
+    const storedVoucherNo = sessionStorage.getItem('currentVoucherNo');
+    if (storedVoucherNo !== null && storedVoucherNo !== undefined) {
+      setVoucherNo(Number(storedVoucherNo));
     }
-  };
+  }, []);
   return (
     <Paper
       elevation={3}
@@ -133,6 +146,11 @@ const Accounts = () => {
       >
        <FontAwesomeIcon icon={faCreditCard  } size="sm" style={{ color: "#373A8F" }} /> DAY TO DAY EXPENSES
       </Typography>
+         {voucherNo !== null && voucherNo !== undefined && (
+        <Typography variant="subtitle1" align="center" sx={{ mb: 2, color: "#666" }}>
+          Voucher No: <strong>{voucherNo}</strong>
+        </Typography>
+      )}
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
