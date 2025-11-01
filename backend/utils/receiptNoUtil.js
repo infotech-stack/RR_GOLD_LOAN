@@ -1,32 +1,32 @@
-const Counter = require('../models/counter');
+const LoanEntry = require('../models/loanEntry');
 
-async function getNextReceiptNo(sequenceName = 'loanReceiptNo') {
+async function getNextReceiptNo() {
   try {
-    const counter = await Counter.findByIdAndUpdate(
-      sequenceName,
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }  // Create if not exists
-    );
-    return counter.seq;
+    const lastEntry = await LoanEntry
+      .findOne()
+      .sort({ receiptNo: -1 })
+      .collation({ locale: 'en_US', numericOrdering: true });
+
+    const next = lastEntry ? Number(lastEntry.receiptNo) + 1 : 1;
+    return next;
   } catch (err) {
-    console.error('Error generating receipt number:', err);
+    console.error('Error generating next receipt number:', err);
     throw err;
   }
 }
 
-async function peekNextReceiptNo(sequenceName = 'loanReceiptNo') {
+async function peekNextReceiptNo() {
   try {
-    // Find the current counter document without incrementing
-    const counter = await Counter.findById(sequenceName);
-    const currentSeq = counter ? counter.seq : 0;
-    return currentSeq + 1;  // next receiptNo
+    const lastEntry = await LoanEntry
+      .findOne()
+      .sort({ receiptNo: -1 })
+      .collation({ locale: 'en_US', numericOrdering: true });
+
+    return lastEntry ? Number(lastEntry.receiptNo) + 1 : 1;
   } catch (err) {
-    console.error('Error peeking receipt number:', err);
+    console.error('Error peeking next receipt number:', err);
     throw err;
   }
 }
 
-module.exports = {
-  getNextReceiptNo,
-  peekNextReceiptNo
-};
+module.exports = { getNextReceiptNo, peekNextReceiptNo };

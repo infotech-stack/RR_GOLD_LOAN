@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.d6f9b580.css",
-    "main.js": "/static/js/main.d79ce5b6.js",
+    "main.js": "/static/js/main.e2879403.js",
     "static/js/621.7672ca36.chunk.js": "/static/js/621.7672ca36.chunk.js",
     "static/js/917.b462e81f.chunk.js": "/static/js/917.b462e81f.chunk.js",
     "static/media/women-jewel.jpeg": "/static/media/women-jewel.0dde6fe0763df49a59ec.jpeg",
@@ -12,12 +12,12 @@
     "static/media/usericon.png": "/static/media/usericon.cf586411f46f702441a4.png",
     "index.html": "/index.html",
     "main.d6f9b580.css.map": "/static/css/main.d6f9b580.css.map",
-    "main.d79ce5b6.js.map": "/static/js/main.d79ce5b6.js.map",
+    "main.e2879403.js.map": "/static/js/main.e2879403.js.map",
     "621.7672ca36.chunk.js.map": "/static/js/621.7672ca36.chunk.js.map",
     "917.b462e81f.chunk.js.map": "/static/js/917.b462e81f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d6f9b580.css",
-    "static/js/main.d79ce5b6.js"
+    "static/js/main.e2879403.js"
   ]
 }
